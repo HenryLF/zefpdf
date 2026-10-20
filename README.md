@@ -32,7 +32,7 @@ curl -fsSL https://raw.githubusercontent.com/HenryLF/zefpdf/main/install.sh | ba
 
 This clones zefpdf into `~/.local/share/zefpdf` (or the folder given as an argument, or
 `$ZEFPDF_DIR`), installs [Bun](https://bun.sh) if it is missing, builds the app, and puts a
-`zefpdf` command on your PATH. Then:
+`zefpdf` command on your PATH. On Linux it also adds a ZefPdf launcher to your app menu. Then:
 
 ```bash
 zefpdf               # serve the folder named in config.json and open the browser
@@ -220,7 +220,8 @@ server/    Bun.serve: guard, config, root, db (bun:sqlite), routes/
 app/       the Preact app: state/ (zustand), ui/, views/{library,reader,database}, plugins/
 plugins/   one folder per plugin, plus plugins/shared
 scripts/   gen-registry.ts
-install.sh install from GitHub, or update and rebuild
+install.sh install from GitHub, or update and rebuild; on Linux, adds a desktop entry
+zefpdf.svg the desktop entry icon
 test/      bun tests, and the CDP smoke test
 ```
 

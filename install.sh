@@ -64,6 +64,29 @@ bun run build
 say "Linking the zefpdf command"
 bun link
 
+# Linux desktop entry. Absolute paths: a launcher does not see the shell's
+# PATH, so neither `zefpdf` nor the `#!/usr/bin/env bun` shebang would resolve.
+if [ "$(uname -s)" = Linux ]; then
+  say "Installing the desktop entry"
+  data="${XDG_DATA_HOME:-$HOME/.local/share}"
+  install -Dm644 "$DIR/zefpdf.svg" "$data/icons/hicolor/scalable/apps/zefpdf.svg"
+  mkdir -p "$data/applications"
+  cat > "$data/applications/zefpdf.desktop" <<EOF
+[Desktop Entry]
+Version=1.1
+Type=Application
+Name=ZefPdf
+Comment=Launch the zefpdf server
+Exec="$(command -v bun)" "$DIR/server/index.ts"
+Icon=zefpdf
+Terminal=true
+Categories=Utility;
+StartupNotify=true
+EOF
+  command -v update-desktop-database >/dev/null && update-desktop-database "$data/applications" || true
+  command -v gtk-update-icon-cache >/dev/null && gtk-update-icon-cache -qft "$data/icons/hicolor" || true
+fi
+
 echo
 say "Done ($(git rev-parse --short HEAD)). Run: zefpdf   (or: bun $DIR/server/index.ts)"
 command -v zefpdf >/dev/null || echo "    add ~/.bun/bin to your PATH to get the zefpdf command"
