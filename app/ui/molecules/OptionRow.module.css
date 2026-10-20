@@ -1,0 +1,45 @@
+/* One labelled control in a panel body. The three shapes below share a grid so
+   sliders, checkboxes and selects line up down the column. */
+
+.option {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 8px;
+  margin-bottom: 12px;
+  font-size: 12px;
+}
+
+.label {
+  color: var(--text-dim);
+}
+
+.value {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Sliders and selects sit under their label, across both columns. */
+.wide {
+  grid-column: 1 / -1;
+}
+
+.check {
+  grid-template-columns: auto 1fr;
+  cursor: pointer;
+}
+
+.hint {
+  margin: -8px 0 12px;
+  color: var(--text-dim);
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+/* Paths and file names read in a hint. */
+.hint code {
+  color: var(--text);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 10.5px;
+  overflow-wrap: anywhere;
+}

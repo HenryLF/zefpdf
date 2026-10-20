@@ -1,0 +1,47 @@
+.reader {
+  height: 100%;
+  /* Both axes: over 100% max page width the page is wider than the window on
+     purpose, and the zoom tool relies on being able to scroll sideways. */
+  overflow: auto;
+  /* No side padding: it is width the pages could have used, and it is what made
+     a setting just under 100% overflow. The gap above and below stays. */
+  padding: 24px 0;
+  display: flex;
+  flex-direction: column;
+  /* `safe` matters once a page overflows: plain centring pushes the overflow
+     into the unscrollable direction and the page's left edge becomes
+     unreachable. It falls back to centring while everything fits. */
+  align-items: safe center;
+  /* gap comes from the pageGap setting, applied inline */
+  scroll-behavior: auto;
+}
+
+/* Pan mode, driven by the zoom plugin: the drag moves the document, so text
+   selection has to stand aside for it. */
+.pan {
+  cursor: grab;
+  user-select: none;
+}
+
+/* Links stand aside too, or a drag released over one would follow it. The only
+   sections in the reader are pdf.js's annotations; the extra class outranks the
+   global `.annotationLayer section` whatever order the two land in. */
+.reader.pan section {
+  pointer-events: none;
+}
+
+.panning {
+  cursor: grabbing;
+}
+
+.indicator {
+  right: var(--hud-inset);
+  bottom: var(--hud-inset);
+  transition: right var(--t-slow);
+}
+
+/* Step aside for the page strip instead of sitting underneath it: it keeps its
+   own inset, measured from the strip's edge rather than the window's. */
+.shifted {
+  right: calc(var(--strip-width) + var(--hud-inset));
+}

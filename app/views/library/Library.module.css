@@ -1,0 +1,57 @@
+.library {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-library-header);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.count {
+  color: var(--text-dim);
+  margin-right: auto;
+}
+
+.grid {
+  display: grid;
+  gap: 20px;
+  padding: 4px 24px 24px;
+  /* columns come from the cardWidth setting, applied inline */
+}
+
+/* The served folder's name: click to pick another. */
+.root {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  padding: 2px 10px;
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  max-width: 30ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.root:hover {
+  color: var(--text);
+  background: var(--surface-hover);
+}
+

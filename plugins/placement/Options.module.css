@@ -1,0 +1,73 @@
+/* Rows laid out like the shared option rows (`OptionRow`), for the controls
+   those do not cover: a text field, two numbers, a checkbox with a weight. */
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 8px;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.label {
+  color: var(--text-dim);
+}
+
+.row .wide {
+  grid-column: 1 / -1;
+  /* The TextInput atom sizes itself for a toolbar; here it fills the column. */
+  width: 100%;
+  min-width: 0;
+  padding: 5px 8px;
+  font-size: 12px;
+}
+
+.row .number {
+  width: 5em;
+  padding: 4px 6px;
+  font-size: 12px;
+}
+
+.sizes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 12px;
+}
+
+.buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+/* A constraint: checkbox and label, then its weight on the right. */
+.constraint {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 12px;
+}
+
+.check {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  cursor: pointer;
+}
+
+/* The Select atom fills its column; a weight only needs its word. */
+.constraint .weight,
+.row .weight {
+  width: auto;
+}

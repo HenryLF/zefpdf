@@ -1,0 +1,68 @@
+.panel {
+  position: fixed;
+  z-index: var(--z-panel);
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  /* Fade back when the panel is not the one being used, so it stops competing
+     with the page underneath. --panel-idle-opacity comes from the settings.
+     "Being used" is `.active`, set from presses and focus in FloatingPanel.tsx
+     rather than from :hover or :focus-within, neither of which can see into an
+     iframe. Hovering still lifts a faded panel, so it reads as reachable. */
+  opacity: var(--panel-idle-opacity, 0.55);
+  transition: opacity var(--t-med);
+}
+
+.panel:hover,
+.active {
+  opacity: 1;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 8px 7px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-2);
+  cursor: move;
+  touch-action: none;
+  user-select: none;
+}
+
+.collapsed .bar {
+  border-bottom: 0;
+}
+
+/* The panel's contents. Transparent to layout, so children remain flex items of
+   the panel itself; `.hidden` is what a collapse does instead of unmounting
+   them — see FloatingPanel.tsx. The order matters: `.hidden` must come after
+   `.body` to win, since both are one class. */
+.body {
+  display: contents;
+}
+
+.hidden {
+  display: none;
+}
+
+.resize {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  width: 16px;
+  height: 16px;
+  cursor: nwse-resize;
+  touch-action: none;
+  background: linear-gradient(
+    135deg,
+    transparent 50%,
+    var(--border) 50%,
+    var(--border) 70%,
+    transparent 70%
+  );
+}

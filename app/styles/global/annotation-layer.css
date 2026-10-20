@@ -1,0 +1,67 @@
+/* The link part of pdfjs-dist/web/pdf_viewer.css (.annotationLayer block), plus
+   the page-rotation transforms that stylesheet applies to every layer. Global
+   for the same reason as text-layer.css: pdf.js builds this markup itself and
+   finds it by these exact class names. Forms, popups and the editor are left
+   out — the reader only follows links. */
+
+:is(.textLayer, .annotationLayer){
+  /* pdf.js sizes a layer as round(down, scale * page size, these). Without
+     them the width is invalid and the layer is 0x0 — or, for the text layer,
+     falls back to its inset and takes the *rotated* box. */
+  --scale-round-x:1px;
+  --scale-round-y:1px;
+}
+
+/* A layer is laid out in the page's unrotated coordinates and then turned as a
+   whole. Both layers carry this attribute; without these rules a turned page's
+   text and links stay where the unturned page had them. */
+:is(.textLayer, .annotationLayer)[data-main-rotation="90"]{
+  transform:rotate(90deg) translateY(-100%);
+}
+:is(.textLayer, .annotationLayer)[data-main-rotation="180"]{
+  transform:rotate(180deg) translate(-100%, -100%);
+}
+:is(.textLayer, .annotationLayer)[data-main-rotation="270"]{
+  transform:rotate(270deg) translateX(-100%);
+}
+
+.annotationLayer{
+  position:absolute;
+  top:0;
+  left:0;
+  pointer-events:none;
+  transform-origin:0 0;
+
+  section{
+    position:absolute;
+    text-align:initial;
+    pointer-events:auto;
+    box-sizing:border-box;
+    transform-origin:0 0;
+    -webkit-user-select:none;
+            user-select:none;
+  }
+
+  .linkAnnotation > a{
+    position:absolute;
+    font-size:1em;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+  }
+
+  .linkAnnotation:not(.hasBorder) > a:hover{
+    opacity:0.2;
+    background-color:var(--accent);
+  }
+
+  .linkAnnotation.hasBorder:hover{
+    background-color:color-mix(in srgb, var(--accent), transparent 80%);
+  }
+}
+
+/* A text selection dragged across a link carries on selecting. */
+.textLayer.selecting ~ .annotationLayer section{
+  pointer-events:none;
+}

@@ -1,0 +1,67 @@
+/* The zoom window: a slider over a map of the page. The window itself is the
+   FloatingPanel; this is only what goes inside it. */
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  gap: 8px;
+  min-height: 0;
+  padding: 10px 12px 12px;
+  overflow-y: auto;
+  font-size: 12px;
+}
+
+.row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.label {
+  color: var(--text-dim);
+}
+
+.value {
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+}
+
+/* The page map. It stands for paper, so it is drawn in the page colour rather
+   than in a surface colour, and the window over it is the accent. */
+.map {
+  position: relative;
+  /* The shape comes from the page itself, applied inline — along with a
+     max-width derived from it, because a max-height would clamp the height
+     while the width stayed 100% and quietly distort the map. */
+  width: 100%;
+  margin: 0 auto;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--page-white);
+  /* Grabbed and moved, not pointed at: see Minimap. */
+  cursor: grab;
+  touch-action: none;
+  overflow: hidden;
+}
+
+.dragging {
+  cursor: grabbing;
+}
+
+.window {
+  position: absolute;
+  border: 1.5px solid var(--accent);
+  border-radius: 2px;
+  background: var(--accent-dim);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+/* Before a page is measured: keeps the card from jumping once it is. */
+.waiting {
+  height: 60px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}

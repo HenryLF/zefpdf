@@ -1,0 +1,25 @@
+/* Small floating readout — the reader's page counter.
+   Placement is the caller's business; only the look lives here. Size, colour
+   and opacities read the custom properties `appearanceVars` sets, falling back
+   to the pill's own when there is no Appearance. */
+
+.pill {
+  position: fixed;
+  z-index: var(--z-hud);
+  padding: 6px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
+  background: color-mix(
+    in srgb,
+    var(--surface) calc(var(--surface-alpha, 90) * 1%),
+    transparent
+  );
+  color: color-mix(
+    in srgb,
+    var(--fg, var(--text-dim)) calc(var(--fg-alpha, 100) * 1%),
+    transparent
+  );
+  font-size: var(--font-size, 12px);
+  font-variant-numeric: tabular-nums;
+  pointer-events: none;
+}

@@ -1,0 +1,40 @@
+/* The card an overlay sits on. The four custom properties come from
+   `appearanceVars`; where it sits comes from the Widget around it.
+
+   This deliberately does *not* compose the Pill atom. A pill fixes its
+   background, its text colour and its font size, and those three are precisely
+   what these overlays exist to let the user set — composing it would mean
+   overriding all three by specificity, which is a fight, not reuse. What is
+   left of a pill after that is a border and a radius. */
+.surface {
+  /* The typography an Appearance drives. */
+  color: color-mix(in srgb, var(--fg) calc(var(--fg-alpha) * 1%), transparent);
+  font-size: var(--font-size);
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+
+  padding: 8px 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: color-mix(
+    in srgb,
+    var(--surface) calc(var(--surface-alpha) * 1%),
+    transparent
+  );
+}
+
+/* Pill-shaped, for an overlay that reads as a label thrown on screen rather
+   than as a card parked on it — the drawn student name. It lives here beside
+   `.surface`, and not in the plugin, because same-file order settles the
+   radius deterministically: where two *modules* land in the bundle follows the
+   import graph, so a plugin redeclaring it would be settled by build order. */
+.round {
+  border-radius: var(--radius-pill);
+}
+
+/* No frame. A clock or a countdown reads as a number lying on the page, and a
+   box around it only competes with the document; the calendar keeps its border
+   because it is a grid and needs an edge. */
+.plain {
+  border-color: transparent;
+}

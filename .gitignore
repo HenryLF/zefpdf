@@ -1,0 +1,52 @@
+# dependencies (bun install)
+node_modules
+
+# output
+out
+dist
+*.tgz
+
+# code coverage
+coverage
+*.lcov
+
+# logs
+logs
+_.log
+report.[0-9]_.[0-9]_.[0-9]_.[0-9]_.json
+
+# dotenv environment variable files
+.env
+.env.development.local
+.env.test.local
+.env.production.local
+.env.local
+
+# caches
+.eslintcache
+.cache
+*.tsbuildinfo
+
+# IntelliJ based IDEs
+.idea
+
+# Finder (MacOS) folder config
+.DS_Store
+
+# generated before every build by scripts/gen-registry.ts
+app/plugins/registry.generated.ts
+
+# the class database, beside config.json
+data.sqlite
+data.sqlite-*
+
+# the GeoGebra Math Apps Bundle: tens of MB of upstream build, unpacked by hand
+plugins/geogebra/static/bundle/
+
+# smoke-test fixture tree
+test/.fixtures/
+
+# sample files served by the default config.json (cwd: "test")
+test/a/
+test/b/
+source

@@ -1,0 +1,49 @@
+/* The list slides out of the + button rather than appearing beside it, so the
+   toolbar keeps its footprint until it is asked for. */
+
+.list {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  overflow: hidden;
+  /* max-width rather than width: the row is sized by its buttons, and a
+     transition needs a length to move between. */
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    max-width var(--t-slow),
+    opacity var(--t-med);
+}
+
+.open {
+  /* Room for several buttons; the row never actually fills it. */
+  max-width: 80vw;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+/* + turns into × on the way open. */
+.plus {
+  display: block;
+  font-size: 18px;
+  line-height: 1;
+  transition: transform var(--t-med);
+}
+
+.turned {
+  transform: rotate(45deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .list,
+  .plus {
+    transition: none;
+  }
+}
+
+.panelBody {
+  flex: 1;
+  padding: 10px 12px 12px;
+  overflow-y: auto;
+}

@@ -1,0 +1,50 @@
+/* The countdown over its transport. Colour, size and the card behind them are
+   the user's — only the two states that must be readable across a room are
+   decided here. */
+
+.card {
+  /* `plain`: no frame. A countdown reads as a number lying on the page, and a
+     box around it only competes with the document. */
+  composes: surface plain from "../shared/surface.module.css";
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.time {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+/* Paused reads as held, not as broken: dimmer, nothing else moves. */
+.paused {
+  opacity: 0.6;
+}
+
+/* Finished. The pulse sits behind the card rather than on the number, whose
+   colour the user chose and which it would otherwise fight. */
+.done {
+  animation: timer-done 1.1s ease-in-out infinite alternate;
+}
+
+@keyframes timer-done {
+  from {
+    box-shadow: 0 0 0 0 transparent;
+  }
+  to {
+    box-shadow: 0 0 0 5px var(--danger-bg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .done {
+    animation: none;
+    box-shadow: 0 0 0 4px var(--danger-bg);
+  }
+}
+
+.buttons {
+  display: flex;
+  gap: 6px;
+}

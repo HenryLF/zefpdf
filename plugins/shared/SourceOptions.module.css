@@ -1,0 +1,27 @@
+/* A text field laid out like the shared option rows — there is no TextOption
+   molecule, and this one field is all the plugins need. */
+
+.row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 4px 8px;
+  margin-bottom: 4px;
+  font-size: 12px;
+}
+
+.label {
+  color: var(--text-dim);
+}
+
+.wide {
+  grid-column: 1 / -1;
+  /* The TextInput atom sizes itself for a toolbar; here it fills the column. */
+  min-width: 0;
+}
+
+.buttons {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 12px;
+}

@@ -1,0 +1,35 @@
+/* The floating circular button used by the bottom-left toolbar: the options
+   button, the plugin bar's toggle, and one per plugin. Placement belongs to
+   the caller — this is only the chrome. */
+
+.round {
+  composes: focusRing from "../../styles/focus.module.css";
+  flex: none;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 90%, transparent);
+  color: var(--text-dim);
+  font: inherit;
+  font-size: 15px;
+  line-height: 1;
+  cursor: pointer;
+
+  /* Same idle fade as the floating window, and the same setting drives it. */
+  opacity: var(--panel-idle-opacity, 0.55);
+  transition:
+    opacity var(--t-med),
+    color var(--t-med),
+    border-color var(--t-med);
+}
+
+.round:hover,
+.round:focus-visible,
+.round[aria-pressed="true"] {
+  opacity: 1;
+  color: var(--text);
+  border-color: var(--accent-dim);
+}

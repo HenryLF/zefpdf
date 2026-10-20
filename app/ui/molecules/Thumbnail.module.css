@@ -1,0 +1,35 @@
+.thumb {
+  display: grid;
+  place-items: center;
+  aspect-ratio: var(--page-ratio);
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+}
+
+/* Image and placeholder share one cell, so swapping them cannot reflow. */
+.thumb > * {
+  grid-area: 1 / 1;
+}
+
+.image {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: var(--page-white);
+}
+
+/* Set but not yet decoded: it keeps its box while the pixels arrive. */
+.pending {
+  visibility: hidden;
+}
+
+/* Fills the card; the shimmer itself comes from the Skeleton atom. */
+.skeleton {
+  height: 100%;
+}
+
+.error {
+  color: var(--text-dim);
+  font-size: 12px;
+}

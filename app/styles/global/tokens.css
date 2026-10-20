@@ -1,0 +1,80 @@
+/* Design tokens. Global on purpose: every CSS Module reads these by name. */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #0e1013;
+  --surface: #16191e;
+  --surface-2: #1e232a;
+  /* one step above --surface-2: raised controls and skeleton highlights */
+  --surface-3: #262c35;
+  --surface-hover: #242a33;
+  --border: #2a3038;
+  --text: #e6e8eb;
+  --text-dim: #9aa3ad;
+  --accent: #6aa6ff;
+  --accent-dim: #2b4468;
+  --shadow: 0 8px 24px rgb(0 0 0 / 0.45);
+
+  /* Scrollbars. One look for every browser — see base.css. The track is the
+     surface the scroller already draws, so only the thumb has a colour. */
+  --scrollbar-thumb: #4b545f;
+  --scrollbar-thumb-hover: #6b7683;
+  --scrollbar-size: 12px;
+  /* Ring of track left around the thumb, which is what makes it read as a
+     floating pill rather than as a filled bar. */
+  --scrollbar-inset: 3px;
+
+  --danger-border: #5a2a2a;
+  --danger-bg: #241618;
+  --danger-text: #ffb4b4;
+
+  /* Paper. Pages are white whatever the interface is. */
+  --page-white: #fff;
+  /* A4, the shape a page box assumes before its real size is known. */
+  --page-ratio: 1 / 1.414;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius: 10px;
+  --radius-pill: 999px;
+
+  --t-fast: 0.15s ease;
+  --t-med: 0.18s ease;
+  --t-slow: 0.22s ease;
+
+  /* Height the tab bar adds to the top of the app when shown. Lives here
+     rather than beside the tab bar because #root's layout is built on it. */
+  --tab-bar-height: 43px;
+
+  /* Width of the page strip. The reader's page indicator slides by exactly
+     this plus its own inset, so the two must move together. */
+  --strip-width: clamp(196px, 22vw, 520px);
+  /* Inset of the floating HUD elements from the window edge. */
+  --hud-inset: 20px;
+  /* Height of the bottom-left toolbar — one RoundButton. Stated here because
+     the toolbar's own height must be knowable without measuring it. */
+  --toolbar-height: 36px;
+
+  /* Stacking order, lowest first. Named so a new layer can be placed without
+     hunting through five stylesheets for the numbers already in use. */
+  --z-library-header: 5;
+  --z-options-button: 25;
+  --z-tab-bar: 40;
+  /* The page strip is the top of the app's own chrome — over the tab bar and
+     the page counter — but still under anything floating: a widget or a panel
+     the user put on screen stays on top of it. */
+  --z-strip: 42;
+  /* Above the tab bar, below the panels: a widget the user placed belongs over
+     the app's own chrome, and a window opened on top of one belongs over the
+     widget. Both are load-bearing — this is what lets either be parked in the
+     strip the tab bar slides out of and still be taken hold of, while a panel
+     that has just been raised is never buried by a clock. */
+  --z-widget: 45;
+  /* The pills — the page counter and the drawn student name. Over the widgets,
+     because a pill is transient and unmovable: it appears for a moment at a
+     corner the user cannot change, so anything parked there would otherwise
+     swallow it. Still under the panels, which are what the user is doing. */
+  --z-hud: 48;
+  --z-panel: 50;
+}

@@ -1,0 +1,28 @@
+/* The native colour well, trimmed to look like the other controls: browsers
+   give it a thick default border and a large intrinsic size. */
+
+.color {
+  composes: focusRing from "../../styles/focus.module.css";
+  width: 28px;
+  height: 22px;
+  padding: 0;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  cursor: pointer;
+}
+
+/* The swatch itself, which is a shadow part in both engines. */
+.color::-webkit-color-swatch-wrapper {
+  padding: 2px;
+}
+
+.color::-webkit-color-swatch {
+  border: 0;
+  border-radius: 3px;
+}
+
+.color::-moz-color-swatch {
+  border: 0;
+  border-radius: 3px;
+}

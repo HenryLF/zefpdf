@@ -1,0 +1,79 @@
+/* The drawn name: a pill that slides in at the top left, stays, then fades.
+   The card is the shared `surface`, rounded off: what the options set — the
+   colour, the two opacities and the text size — is exactly what a surface
+   reads from the custom properties `appearanceVars` writes. These rules only
+   add placement, the layer and the animation. */
+
+.card {
+  composes: surface round from "../shared/surface.module.css";
+  position: fixed;
+  z-index: var(--z-hud);
+  top: var(--hud-inset);
+  left: var(--hud-inset);
+  display: flex;
+  align-items: baseline;
+  gap: 0.3em;
+  max-width: calc(100vw - 2 * var(--hud-inset));
+  pointer-events: none;
+
+  /* --visible-ms and --fade-ms come from the component, so the wait before
+     fading and the timer that unmounts the pill cannot drift apart. */
+  animation:
+    draw-in 0.35s cubic-bezier(0.2, 0.9, 0.3, 1) both,
+    draw-out var(--fade-ms) ease var(--visible-ms) both;
+}
+
+/* Surname heavier, given name lighter — weight and a touch of transparency,
+   never a second colour, so one `Text colour` sets the whole pill. */
+.last {
+  font-weight: 600;
+}
+
+.first {
+  font-weight: 400;
+  opacity: 0.8;
+}
+
+/* No class or no students: the same pill, quieter and at a fixed size, so it
+   reads as guidance rather than as a drawn name. */
+.hint .last,
+.hint .first {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--text-dim);
+  opacity: 1;
+}
+
+@keyframes draw-in {
+  from {
+    transform: translateX(calc(-100% - 32px));
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes draw-out {
+  to {
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .card {
+    animation:
+      draw-fade-in 0.2s ease both,
+      draw-out var(--fade-ms) ease var(--visible-ms) both;
+  }
+
+  @keyframes draw-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+}

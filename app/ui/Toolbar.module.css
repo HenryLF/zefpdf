@@ -1,0 +1,15 @@
+/* The bottom-left cluster. One flex row, so adding a button never means
+   working out an offset for it. */
+
+.toolbar {
+  position: fixed;
+  left: 20px;
+  bottom: 20px;
+  z-index: var(--z-options-button);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Stated rather than left to the buttons, so the row keeps one height as
+     they fold in and out. */
+  height: var(--toolbar-height);
+}

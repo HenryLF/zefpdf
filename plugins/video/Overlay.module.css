@@ -1,0 +1,36 @@
+/* The card fills the panel below its title bar; the Appearance colours it and
+   sizes the text of the empty state. `min-width: 0` and `min-height: 0` let it
+   shrink inside the panel's column rather than holding the panel open. */
+
+.card {
+  composes: surface plain from "../shared/surface.module.css";
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+}
+
+/* With a video, the card gives up its padding so the player reaches the
+   panel's edges. Two classes, so it beats `surface`'s padding by specificity
+   rather than by where the two modules land in the bundle. */
+.card.playing {
+  padding: 0;
+  /* The player is sized against this box: the largest 16:9 that fits, centred,
+     with the card's own background showing in the bars either side. */
+  container-type: size;
+  align-items: center;
+  justify-content: center;
+}
+
+.player {
+  flex: none;
+  width: min(100cqw, 100cqh * 16 / 9);
+  aspect-ratio: 16 / 9;
+  border: 0;
+}
+
+.empty {
+  margin: auto;
+  text-align: center;
+}

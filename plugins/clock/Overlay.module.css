@@ -1,0 +1,19 @@
+/* Time over date. Both sizes are relative to the configured text size, so one
+   slider scales the whole card and the two lines keep their proportion. */
+
+.card {
+  composes: surface plain from "../shared/surface.module.css";
+  text-align: center;
+}
+
+.time {
+  font-weight: 600;
+  letter-spacing: 0.02em;
+}
+
+.date {
+  margin-top: 2px;
+  font-size: 0.45em;
+  /* Intl gives "lundi"; the date reads better with the day capitalised. */
+  text-transform: capitalize;
+}

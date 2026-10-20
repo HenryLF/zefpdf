@@ -1,0 +1,46 @@
+.body {
+  flex: 1;
+  padding: 10px 12px 12px;
+  overflow-y: auto;
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.keyRow {
+  display: grid;
+  grid-template-columns: 1fr 9em;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+}
+
+.keyLabel {
+  color: var(--text-dim);
+}
+
+.keyInput {
+  width: 100%;
+  min-width: 0;
+}
+
+.rootRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rootPath {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  direction: rtl;
+  text-align: left;
+  font-size: 12px;
+  color: var(--text-dim);
+}

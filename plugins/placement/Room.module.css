@@ -1,0 +1,252 @@
+/* The classroom drawn in the panel: the app's own surfaces and borders, so the
+   plan reads as part of the app rather than as a picture pasted into it. */
+
+.room {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--bg);
+}
+
+.grid {
+  --gap: 4px;
+
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  gap: var(--gap);
+  grid-template-columns: repeat(var(--n-cols), minmax(0, 1fr));
+  /* The whiteboard row is a third of a cell's height, but never too thin to grab. */
+  grid-template-rows: minmax(22px, 1fr) repeat(var(--n-rows), minmax(0, 3fr));
+}
+
+.boardRow {
+  grid-column: 1 / -1;
+  position: relative;
+  min-height: 0;
+}
+
+/* Placed over columns --col to --col + --span (half steps allowed): one column
+   plus its gap is (row width + gap) / --n-cols. */
+.board {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: calc((100% + var(--gap)) * var(--col) / var(--n-cols));
+  width: calc((100% + var(--gap)) * var(--span) / var(--n-cols) - var(--gap));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+  background: var(--surface-2);
+  color: var(--text-dim);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
+.moving {
+  opacity: 0.8;
+  cursor: grabbing;
+}
+
+/* Resize grips on the board's side edges. */
+.handle {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  cursor: ew-resize;
+  touch-action: none;
+}
+
+.handle::after {
+  content: "";
+  position: absolute;
+  top: 25%;
+  bottom: 25%;
+  left: 5px;
+  width: 2px;
+  border-radius: 1px;
+  background: var(--accent-dim);
+}
+
+.left {
+  left: 0;
+}
+
+.right {
+  right: 0;
+}
+
+.cell {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 0;
+  min-height: 0;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+  transition: background-color var(--t-fast);
+}
+
+/* A click adds a table here; a "+" hints at it under a mouse. */
+.empty {
+  cursor: pointer;
+}
+
+@media (hover: hover) {
+  .empty:hover::after {
+    content: "+";
+    color: var(--text-dim);
+    font-size: 18px;
+  }
+}
+
+.over {
+  border-color: var(--accent);
+  background: var(--accent-dim);
+}
+
+/* A drag source: `touch-action: none` keeps a touch drag from scrolling. */
+.draggable {
+  cursor: grab;
+  user-select: none;
+  touch-action: none;
+}
+
+.draggable:active {
+  cursor: grabbing;
+}
+
+.table {
+  width: 100%;
+  max-height: 100%;
+  aspect-ratio: 4 / 3;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  /* Room either side for the violation arrows, which sit on the cell's edges:
+     a name runs up to them, never under them. */
+  padding: 0 11px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-3);
+  color: var(--text);
+  transition:
+    border-color var(--t-fast),
+    opacity var(--t-fast);
+}
+
+.table:hover {
+  border-color: var(--accent-dim);
+}
+
+/* Long names wrap between words (a word wider than the table breaks too), up
+   to three lines, then end with an ellipsis. */
+.name {
+  min-width: 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  text-align: center;
+  line-height: 1.15;
+  font-size: var(--name-size);
+  font-weight: 600;
+  pointer-events: none;
+}
+
+/* Switched off for the placement: nobody sits here. */
+.off {
+  border-style: dashed;
+  opacity: 0.35;
+}
+
+/* The source left in place while its preview follows the pointer. */
+.dragging {
+  opacity: 0.35;
+}
+
+/* Drop zone to remove a table, as tall as the whiteboard row. It may cover
+   the board, never a cell. */
+.trash {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  height: 100%;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px dashed var(--danger-border);
+  border-radius: var(--radius-pill);
+  background: var(--danger-bg);
+  font-size: 13px;
+  transition: transform var(--t-fast);
+}
+
+.trashOver {
+  border-style: solid;
+  transform: scale(1.2);
+}
+
+/* Follows the pointer; never in the way of what is under it. */
+.preview {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 3;
+  pointer-events: none;
+  opacity: 0.85;
+}
+
+.previewTable {
+  width: 56px;
+  box-shadow: var(--shadow);
+}
+
+/* Violation arrows, centred on an edge or corner of the cell. They never take
+   pointer events, so dragging is unaffected. */
+.marks {
+  position: absolute;
+  z-index: 1;
+  display: flex;
+  gap: 2px;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+/* Left and right edges, and corners, stack their arrows vertically. */
+.vertical {
+  flex-direction: column;
+}
+
+/* A triangle pointing right, turned toward the neighbour by --angle. */
+.arrow {
+  width: 11px;
+  height: 11px;
+  clip-path: polygon(0 0, 100% 50%, 0 100%);
+  transform: rotate(var(--angle));
+}
+
+.apart {
+  composes: apart from "./marks.module.css";
+}
+
+.gender {
+  composes: gender from "./marks.module.css";
+}

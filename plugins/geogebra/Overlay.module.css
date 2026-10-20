@@ -1,0 +1,36 @@
+/* The applet fills the panel below its title bar. `min-height: 0` and
+   `min-width: 0` are what let it shrink inside the column flex container
+   rather than pushing the panel past the size the user gave it. */
+
+.body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  padding: 8px;
+  gap: 8px;
+}
+
+/* The box the applet is fitted to, and the only one here that follows the
+   panel: `deployggb` writes an inline width and height on the element it
+   injects into, at the size it was injected with, so that element can never be
+   measured for a *smaller* panel. The host is therefore taken out of the flow
+   inside this stage — it keeps its pinned size, `fit` measures the stage, and
+   what overhangs is clipped until the applet has resized itself into it. */
+
+.stage {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  border-radius: var(--radius-sm);
+  background: var(--page-white);
+}
+
+.host {
+  position: absolute;
+  top: 0;
+  left: 0;
+}

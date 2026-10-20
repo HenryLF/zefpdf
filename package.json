@@ -1,0 +1,31 @@
+{
+  "name": "zefpdf",
+  "module": "server/index.ts",
+  "version": "1.0.0",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "zefpdf": "./server/index.ts"
+  },
+  "scripts": {
+    "gen": "bun scripts/gen-registry.ts",
+    "build": "bun run gen && bun build app/index.html --outdir dist",
+    "dev": "bun run gen && bun build --watch app/index.html --outdir dist",
+    "start": "bun run build && bun server/index.ts",
+    "update": "./install.sh",
+    "typecheck": "bun run gen && tsc --noEmit",
+    "test": "bun test test/",
+    "test:smoke": "bun run build && bun test/smoke.ts"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "pdfjs-dist": "^6.3.289",
+    "preact": "^11.0.1",
+    "zustand": "^5.0.15"
+  }
+}

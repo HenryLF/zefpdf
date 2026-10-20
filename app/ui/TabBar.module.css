@@ -1,0 +1,51 @@
+/* The strip itself. #root's padding, which makes room for it, is in base.css:
+   it keys off a class on <body>, which no module can own. */
+
+.bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: var(--z-tab-bar);
+  display: flex;
+  align-items: stretch;
+  gap: 4px;
+  padding: 6px 8px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 94%, transparent);
+  backdrop-filter: blur(8px);
+
+  transform: translateY(-100%);
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    transform var(--t-med),
+    opacity var(--t-med);
+}
+
+.shown {
+  transform: translateY(0);
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bar {
+    transition: none;
+  }
+}
+
+.hint {
+  margin-left: auto;
+  align-self: center;
+  color: var(--text-dim);
+  font-size: 11px;
+}
+
+/* The class switcher sits after the hint, at the right end of the strip. */
+.switcher {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: 12px;
+}

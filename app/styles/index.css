@@ -1,0 +1,11 @@
+/* The only global stylesheets. Everything else is a CSS Module living beside
+   the component it styles, so there is no cascade order to maintain here.
+
+   - tokens: custom properties, read by every module
+   - base:   the document, <body> and #root
+   - text-layer, annotation-layer: pdf.js builds this markup itself, so its
+     class names are fixed and cannot be hashed */
+@import "./global/tokens.css";
+@import "./global/base.css";
+@import "./global/text-layer.css";
+@import "./global/annotation-layer.css";

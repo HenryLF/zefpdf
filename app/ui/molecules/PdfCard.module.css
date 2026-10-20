@@ -1,0 +1,35 @@
+.card {
+  composes: focusRing from "../../styles/focus.module.css";
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--t-fast),
+    transform var(--t-fast);
+}
+
+.card:hover {
+  border-color: var(--accent-dim);
+  transform: translateY(-2px);
+}
+
+/* Keyboard cursor: the library's own keys move it, and it is not focus. */
+.cursor {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: var(--radius-md);
+}
+
+.name {
+  font-size: 13px;
+  line-height: 1.35;
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,10 @@
+/* Small uppercase heading, shared by the floating panel and page strip bars. */
+
+.microTitle {
+  flex: 1;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-dim);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}

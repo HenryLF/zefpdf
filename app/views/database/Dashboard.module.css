@@ -1,0 +1,191 @@
+.dashboard {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-library-header);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 24px;
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--bg) 88%, transparent);
+  backdrop-filter: blur(8px);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.error {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.error p {
+  margin: 0;
+}
+
+.columns {
+  display: grid;
+  grid-template-columns: minmax(200px, 260px) 1fr;
+  gap: 20px;
+  padding: 20px 24px 80px;
+  align-items: start;
+}
+
+.detail {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.classes,
+.card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--surface);
+}
+
+.classes h2,
+.card h2 {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-height: 50vh;
+  overflow-y: auto;
+}
+
+.row,
+.classRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 4px;
+  border-radius: var(--radius-sm);
+}
+
+.row:hover,
+.classRow:hover {
+  background: var(--surface-hover);
+}
+
+.selected {
+  background: var(--accent-dim);
+}
+
+.selected:hover {
+  background: var(--accent-dim);
+}
+
+.className {
+  flex: 1;
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 6px;
+  border: 0;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.grow {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.dim {
+  color: var(--text-dim);
+  font-weight: normal;
+}
+
+.inline {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.inline > input {
+  flex: 1;
+  min-width: 6em;
+}
+
+.gender {
+  width: auto;
+  flex: none;
+}
+
+.date {
+  flex: none;
+  width: auto;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+/* A CSV roster waiting for its import to be confirmed. */
+.import {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 10px;
+  border: 1px solid var(--accent-dim);
+  border-radius: var(--radius-sm);
+}
+
+.import p {
+  margin: 0;
+}
+
+.choice {
+  width: auto;
+  max-width: 55%;
+  flex: none;
+}
+
+/* A student being removed: the question, then its answers, wrapping as needed. */
+.confirm {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 4px;
+  border-radius: var(--radius-sm);
+  background: var(--surface-hover);
+}
+
+.prompt {
+  flex: 1 1 14em;
+}

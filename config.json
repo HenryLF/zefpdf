@@ -1,0 +1,46 @@
+{
+  "server": {
+    "cwd": "/home/henry/Documents/AbbeGregoire2026",
+    "port": 3000,
+    "ignore": [
+      "node_modules"
+    ],
+    "ignoreFiles": ".localignore",
+    "openBrowser": true
+  },
+  "plugins": {
+    "enabled": [
+      "rotate",
+      "zoom",
+      "clock",
+      "timer",
+      "calendar",
+      "geogebra",
+      "video",
+      "draw",
+      "placement"
+    ]
+  },
+  "keys": {
+    "tab.cycle": "b",
+    "reader.scrollDown": "PageDown",
+    "reader.scrollUp": "PageUp",
+    "reader.pageStrip": "Tab",
+    "reader.close": "Escape",
+    "library.next": "PageDown",
+    "library.prev": "PageUp",
+    "library.activate": "Tab",
+    "classes.open": "c",
+    "rotate.page": "r",
+    "draw.pick": "Enter"
+  },
+  "reader": {
+    "scrollStep": 90,
+    "pageGap": 20,
+    "maxPageWidth": 85,
+    "smoothScroll": false,
+    "cardWidth": 200,
+    "panelOpacity": 55,
+    "fullscreen": true
+  }
+}

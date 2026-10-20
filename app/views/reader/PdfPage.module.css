@@ -1,0 +1,12 @@
+.page {
+  position: relative;
+  /* The reader is a column flex container and .page clips its canvas, so its
+     min-content height is 0 — without this the pages collapse to zero height. */
+  flex: 0 0 auto;
+  background: var(--page-white);
+  overflow: hidden;
+}
+
+.page canvas {
+  display: block;
+}

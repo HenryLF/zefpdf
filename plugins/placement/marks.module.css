@@ -1,0 +1,19 @@
+/* The colour of each broken constraint's arrows on the tables. One place, so
+   an arrow and its swatch in the legend can never drift apart. */
+
+.apart {
+  background: var(--danger-text);
+}
+
+.gender {
+  background: var(--accent);
+}
+
+/* A small square standing in for the arrows, in the legend and the options. */
+.swatch {
+  display: inline-block;
+  flex: none;
+  width: 9px;
+  height: 9px;
+  border-radius: 2px;
+}

@@ -1,0 +1,9 @@
+.range {
+  display: block;
+  width: 100%;
+  /* The UA stylesheet gives a range input `margin: 2px`, so a 100%-wide one
+     overflows its container by 4px whatever the container's size — which is
+     what put a horizontal scrollbar in the zoom window. */
+  margin: 0;
+  accent-color: var(--accent);
+}
