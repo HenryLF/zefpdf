@@ -76,6 +76,11 @@ export const MIGRATIONS: string[] = [
   UPDATE classes SET color = CASE (id - 1) % ${CLASS_COLORS.length}
     ${CLASS_COLORS.map((c, i) => `WHEN ${i} THEN '${c}'`).join(" ")} END;
   `,
+  // 3: the calendar plugin became "planning"; its plannings and notes follow it.
+  `
+  UPDATE OR IGNORE plugin_data SET plugin_id = 'planning' WHERE plugin_id = 'calendar';
+  DELETE FROM plugin_data WHERE plugin_id = 'calendar';
+  `,
 ];
 
 /** A refused write, with the HTTP status the route should answer. */

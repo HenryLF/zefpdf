@@ -7,7 +7,28 @@ import {
   type WithAppearance,
 } from "../shared/store";
 
-const KEY = "zefpdf.plugin.calendar";
+const KEY = "zefpdf.plugin.planning";
+
+/**
+ * The plugin was called `calendar`: its look and its window position move to
+ * the new keys once, the first time this build runs, rather than being lost.
+ */
+function carryOver() {
+  const moves: [string, string][] = [
+    ["zefpdf.plugin.calendar", KEY],
+    ["zefpdf.plugin.calendar.window", `${KEY}.window`],
+  ];
+  for (const [from, to] of moves) {
+    try {
+      const old = localStorage.getItem(from);
+      if (old !== null && localStorage.getItem(to) === null) localStorage.setItem(to, old);
+      localStorage.removeItem(from);
+    } catch {
+      /* storage unavailable: the defaults are used */
+    }
+  }
+}
+carryOver();
 
 /** The panel's look and switch. The plannings themselves are in `planningStore`. */
 interface Persisted extends WithAppearance {
@@ -28,16 +49,16 @@ const DEFAULTS: Persisted = {
   },
 };
 
-interface CalendarStore extends Persisted {
+interface PlanningLookStore extends Persisted {
   set<K extends keyof Persisted>(key: K, value: Persisted[K]): void;
   setAppearance(patch: Partial<Appearance>): void;
 }
 
-export const useCalendar = create<CalendarStore>()((set) => ({
+export const usePlanningLook = create<PlanningLookStore>()((set) => ({
   ...hydrate(KEY, DEFAULTS),
 
   set: fieldSetter<Persisted>(set),
   setAppearance: appearanceSetter<Persisted>(set),
 }));
 
-persistShape(useCalendar, KEY, DEFAULTS);
+persistShape(usePlanningLook, KEY, DEFAULTS);

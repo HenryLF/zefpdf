@@ -19,7 +19,7 @@ import { NoteEditor } from "./NoteEditor";
 import { itemsOfDay, noteKey, type Item } from "./planning";
 import { usePlanning, usePlanningLoaded } from "./planningStore";
 import { refsIn, resolveRef } from "./refs";
-import { useCalendar } from "./store";
+import { usePlanningLook } from "./store";
 import {
   addWeeks,
   dateKey,
@@ -39,8 +39,8 @@ const ROLLOVER_MS = 60_000;
 const PARITY_FR = { even: "paire", odd: "impaire" } as const;
 
 export function Overlay() {
-  const visible = useCalendar((s) => s.visible);
-  const set = useCalendar((s) => s.set);
+  const visible = usePlanningLook((s) => s.visible);
+  const set = usePlanningLook((s) => s.set);
   const openOptions = useUi((s) => s.openPluginOptions);
   /** Transient, like the week shown: reopening starts out reading. */
   const [editing, setEditing] = useState(false);
@@ -49,7 +49,7 @@ export function Overlay() {
 
   return (
     <FloatingPanel
-      storageKey="zefpdf.plugin.calendar.window"
+      storageKey="zefpdf.plugin.planning.window"
       title="Planning"
       defaults={{ x: 0.05, y: 0.08, w: 0.7, h: 0.6, collapsed: false }}
       actions={
@@ -61,7 +61,7 @@ export function Overlay() {
           >
             {editing ? "✓" : "✎"}
           </IconButton>
-          <IconButton title="Calendar options" onClick={() => openOptions("calendar")}>
+          <IconButton title="Planning options" onClick={() => openOptions("planning")}>
             ⚙
           </IconButton>
         </>
@@ -74,9 +74,9 @@ export function Overlay() {
 }
 
 function Week({ editing }: { editing: boolean }) {
-  const showWeekend = useCalendar((s) => s.showWeekend);
-  const todayColor = useCalendar((s) => s.todayColor);
-  const appearance = useCalendar((s) => s.appearance);
+  const showWeekend = usePlanningLook((s) => s.showWeekend);
+  const todayColor = usePlanningLook((s) => s.todayColor);
+  const appearance = usePlanningLook((s) => s.appearance);
   const loaded = usePlanningLoaded();
   const planning = usePlanning((s) => s.planning);
   const notes = usePlanning((s) => s.notes);

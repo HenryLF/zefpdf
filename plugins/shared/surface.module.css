@@ -33,8 +33,7 @@
 }
 
 /* No frame. A clock or a countdown reads as a number lying on the page, and a
-   box around it only competes with the document; the calendar keeps its border
-   because it is a grid and needs an edge. */
+   box around it only competes with the document. */
 .plain {
   border-color: transparent;
 }

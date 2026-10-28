@@ -280,7 +280,9 @@ test("migrating a version-1 database keeps all its data and colours its classes"
     ]);
     expect(snap.links).toMatchObject([{ classId: 1, aId: 1, bId: 2, kind: "apart" }]);
     expect(snap.activeClassId).toBe(2);
-    expect(q.pluginData(migrated, "calendar")).toEqual({ notes: { k: "v" } });
+    // The calendar plugin's data now belongs to `planning`, its new id.
+    expect(q.pluginData(migrated, "calendar")).toEqual({});
+    expect(q.pluginData(migrated, "planning")).toEqual({ notes: { k: "v" } });
     const fk = migrated.query("PRAGMA foreign_key_check").all();
     expect(fk).toEqual([]);
   } finally {

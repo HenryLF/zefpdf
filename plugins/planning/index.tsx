@@ -3,14 +3,14 @@ import { fieldToggle } from "../shared/store";
 import { Icon } from "./Icon";
 import { Options } from "./Options";
 import { Overlay } from "./Overlay";
-import { useCalendar } from "./store";
+import { usePlanningLook } from "./store";
 
 export default {
-  id: "calendar",
-  name: "Calendar",
+  id: "planning",
+  name: "Planning",
   icon: Icon,
   // The toolbar button is the switch; the store stays the plugin's own.
-  useToggle: fieldToggle(useCalendar, "visible"),
+  useToggle: fieldToggle(usePlanningLook, "visible"),
   options: Options,
   overlay: Overlay,
 } satisfies Plugin;

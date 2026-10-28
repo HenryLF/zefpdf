@@ -916,7 +916,7 @@ async function main() {
       await waitFor("pan mode off", async () => (await cursor()) !== "grab");
     });
 
-    console.log("\nclock, calendar, timer and geogebra");
+    console.log("\nclock, planning, timer and geogebra");
 
     /**
      * Open one plugin's panel, unfolding the bar first only if it is folded —
@@ -1279,14 +1279,14 @@ async function main() {
         visible: true,
         appearance: { textColor: "#ff0000", textOpacity: 100 },
       });
-      await seedPlugin(page!, "calendar", {
+      await seedPlugin(page!, "planning", {
         visible: true,
         appearance: { textColor: "#00ff00", textOpacity: 100 },
       });
       await page!.reload();
 
       const colors = await waitFor("both overlays", () =>
-        page!.eval<{ clock: string; calendar: string } | false>(
+        page!.eval<{ clock: string; planning: string } | false>(
           `(() => {
             const c = document.querySelector('[data-clock="time"]');
             // Any day but today, which carries its own highlight colour.
@@ -1294,7 +1294,7 @@ async function main() {
             if (!c || !d) return false;
             return {
               clock: getComputedStyle(c).color,
-              calendar: getComputedStyle(d).color,
+              planning: getComputedStyle(d).color,
             };
           })()`,
         ),
@@ -1304,8 +1304,8 @@ async function main() {
       const green = /\b0,\s*255,\s*0\b|srgb 0 1 0/;
       assert(red.test(colors.clock), `clock is ${colors.clock}, expected red`);
       assert(
-        green.test(colors.calendar),
-        `calendar is ${colors.calendar}, expected green`,
+        green.test(colors.planning),
+        `planning is ${colors.planning}, expected green`,
       );
     });
 
@@ -1336,7 +1336,7 @@ async function main() {
       // Through the app's own page, so the request carries its origin.
       await page!.eval(
         `(async () => {
-          const put = (k, v) => fetch("/api/plugins/calendar/data/" + k, {
+          const put = (k, v) => fetch("/api/plugins/planning/data/" + k, {
             method: "PUT",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(v),
@@ -1345,7 +1345,7 @@ async function main() {
           await put("notes", ${JSON.stringify(notes)});
         })()`,
       );
-      await seedPlugin(page!, "calendar", { visible: true });
+      await seedPlugin(page!, "planning", { visible: true });
       await page!.reload();
 
       const week = await waitFor("the week", () =>
@@ -1429,7 +1429,7 @@ async function main() {
         page!.eval<boolean>(`location.hash === "#/f/alpha.pdf"`),
       );
       // A panel this size would sit over the widgets the next checks click.
-      await seedPlugin(page!, "calendar", { visible: false });
+      await seedPlugin(page!, "planning", { visible: false });
       await page!.eval(`fetch("/api/classes/${classId}", { method: "DELETE" })`);
       await page!.eval(`location.hash = ""`);
     });

@@ -74,8 +74,7 @@ interface Props {
 }
 
 /**
- * A small thing the user parks somewhere on the page: the clock, the timer,
- * the calendar.
+ * A small thing the user parks somewhere on the page: the clock, the timer.
  *
  * Unlike `FloatingPanel` it has no title bar and no size of its own — it is
  * exactly as big as what it contains, so it is resized by making its contents
@@ -148,8 +147,7 @@ export function Widget({
     : toPixels(at, size ?? { w: 0, h: 0 });
 
   const start = (e: PointerEvent) => {
-    // The widget's own controls keep their press — the calendar's arrows, the
-    // timer's buttons.
+    // The widget's own controls keep their press — the timer's buttons.
     if ((e.target as HTMLElement).closest("button, input, select, a, label")) {
       return;
     }

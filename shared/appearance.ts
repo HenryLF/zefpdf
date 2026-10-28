@@ -5,7 +5,7 @@
 //
 // What is shared is the *shape*, its bounds and its validation — never the
 // values. Each owner keeps its own `Appearance`, so the clock can be small and
-// red while the calendar is large and green.
+// red while the planning is large and green.
 
 export interface Appearance {
   /** percent — the surface behind the text, 0 for none at all */

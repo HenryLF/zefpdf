@@ -50,7 +50,7 @@ type StoreHook<S> = <T>(selector: (state: S) => T) => T;
 
 /**
  * The `useToggle` of a plugin switched on and off by one boolean field of its
- * own store — `clock`, `timer`, `calendar` and `geogebra` are all this.
+ * own store — `clock`, `timer`, `planning` and `geogebra` are all this.
  *
  * It stays a hook rather than a value so the switch reads the plugin's own
  * persisted store and core keeps no second copy of the flag.

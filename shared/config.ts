@@ -118,7 +118,7 @@ export const DEFAULT_CONFIG: Config = {
     openBrowser: true,
   },
   plugins: {
-    enabled: ["rotate", "zoom", "clock", "timer", "calendar", "geogebra", "video", "draw", "placement"],
+    enabled: ["rotate", "zoom", "clock", "timer", "planning", "geogebra", "video", "draw", "placement"],
   },
   keys: { ...DEFAULT_KEYS },
   reader: {
@@ -152,6 +152,9 @@ const clamp = (v: number, min: number, max: number) =>
  * right type and clamping the reader's numbers. Whatever is missing or wrong
  * falls back to `base`, so a hand-edited file can never break the app.
  */
+/** Plugins that changed id, so a config naming the old one keeps the plugin. */
+const RENAMED_PLUGINS: Record<string, string> = { calendar: "planning" };
+
 export function mergeConfig(raw: unknown, base: Config = DEFAULT_CONFIG): Config {
   const r = isObj(raw) ? raw : {};
   const s = isObj(r.server) ? r.server : {};
@@ -176,7 +179,7 @@ export function mergeConfig(raw: unknown, base: Config = DEFAULT_CONFIG): Config
 
   const enabled =
     Array.isArray(p.enabled) && p.enabled.every(isStr)
-      ? [...new Set(p.enabled.filter((id) => PLUGIN_ID.test(id)))]
+      ? [...new Set(p.enabled.map((id) => RENAMED_PLUGINS[id] ?? id).filter((id) => PLUGIN_ID.test(id)))]
       : [...base.plugins.enabled];
 
   const keys = { ...base.keys };

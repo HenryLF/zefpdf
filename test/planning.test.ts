@@ -7,8 +7,8 @@ import {
   readNotes,
   readPlanning,
   type Item,
-} from "../plugins/calendar/planning";
-import { refAt, refQuery, refsIn, resolveRef, suggest } from "../plugins/calendar/refs";
+} from "../plugins/planning/planning";
+import { refAt, refQuery, refsIn, resolveRef, suggest } from "../plugins/planning/refs";
 import {
   addWeeks,
   dateKey,
@@ -17,7 +17,7 @@ import {
   parityOf,
   purgeBefore,
   weekDays,
-} from "../plugins/calendar/week";
+} from "../plugins/planning/week";
 
 const file = (path: string) => {
   const i = path.lastIndexOf("/");
@@ -148,10 +148,16 @@ describe("references", () => {
 });
 
 test("a cloned planning keeps its items under new ids", async () => {
-  const { cloneItems } = await import("../plugins/calendar/planning");
+  const { cloneItems } = await import("../plugins/planning/planning");
   const list = [{ id: "a", day: 3, name: "Maths", classId: 2 }];
   const copy = cloneItems(list);
   expect(copy).toHaveLength(1);
   expect(copy[0]).toMatchObject({ day: 3, name: "Maths", classId: 2 });
   expect(copy[0]!.id).not.toBe("a");
+});
+
+test("a config still naming the calendar plugin keeps it, as planning", async () => {
+  const { mergeConfig } = await import("../shared/config");
+  const c = mergeConfig({ plugins: { enabled: ["clock", "calendar", "planning", "draw"] } });
+  expect(c.plugins.enabled).toEqual(["clock", "planning", "draw"]);
 });

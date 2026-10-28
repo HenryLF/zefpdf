@@ -13,7 +13,7 @@ interface Props {
 }
 
 /**
- * A plugin's overlay parked on the page: the clock, the timer, the calendar.
+ * A plugin's overlay parked on the page: the clock, the timer.
  *
  * `Widget` itself knows nothing about plugins — it takes a storage key and a
  * callback. This is the convention laid over it: the key is

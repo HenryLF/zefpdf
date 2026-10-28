@@ -1,12 +1,12 @@
 import { CheckOption, ColorOption, OptionHint, AppearanceOptions } from "@/plugins/sdk";
-import { useCalendar } from "./store";
+import { usePlanningLook } from "./store";
 
 export function Options() {
-  const showWeekend = useCalendar((s) => s.showWeekend);
-  const todayColor = useCalendar((s) => s.todayColor);
-  const appearance = useCalendar((s) => s.appearance);
-  const set = useCalendar((s) => s.set);
-  const setAppearance = useCalendar((s) => s.setAppearance);
+  const showWeekend = usePlanningLook((s) => s.showWeekend);
+  const todayColor = usePlanningLook((s) => s.todayColor);
+  const appearance = usePlanningLook((s) => s.appearance);
+  const set = usePlanningLook((s) => s.set);
+  const setAppearance = usePlanningLook((s) => s.setAppearance);
 
   return (
     <>

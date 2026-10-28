@@ -81,7 +81,7 @@ bun server/index.ts --no-open        # don't launch a browser
   scroll by a share of a page (a whole page when pressed twice quickly); `Tab` opens the
   page strip and outline; `Escape` closes the strip, then the tab.
 - **Classes** — `c`, or **Manage** in the tab bar, opens the classes tab: create, rename,
-  colour and delete classes (each class gets its own colour, which the calendar uses for
+  colour and delete classes (each class gets its own colour, which the planning uses for
   its lessons); add students one row at a time, or **Import CSV…** a roster (Pronote's
   *Élèves* export: name, *Né(e) le*, *Sexe*; other columns are ignored); record seating
   constraints (*sit together* / *sit apart*).
@@ -111,7 +111,7 @@ bun server/index.ts --no-open        # don't launch a browser
 | **placement** | seating plan: lay out your classroom, then place the active class, honouring *together* / *apart* |
 | **timer** | countdown for an activity |
 | **clock** | the time and date on screen |
-| **calendar** | this week's planning, with one planning for even weeks and one for odd weeks. Each lesson has a class and per-week notes, typing `@` in a note links a PDF, and the lesson's card then shows a button that opens it |
+| **planning** | this week's planning, with one planning for even weeks and one for odd weeks. Each lesson has a class and per-week notes, typing `@` in a note links a PDF, and the lesson's card then shows a button that opens it |
 | **zoom** | magnify and pan a part of the page |
 | **rotate** | turn a scanned page the right way up |
 | **geogebra** | the GeoGebra calculator, online or fully offline, with your `.ggb` files |
@@ -135,7 +135,7 @@ the root is ever served.
 ```jsonc
 {
   "server":  { "cwd": "test", "port": 3000, "ignore": ["node_modules"], "ignoreFiles": ".localignore", "openBrowser": true },
-  "plugins": { "enabled": ["rotate", "zoom", "clock", "timer", "calendar", "geogebra", "video", "draw", "placement"] },
+  "plugins": { "enabled": ["rotate", "zoom", "clock", "timer", "planning", "geogebra", "video", "draw", "placement"] },
   "keys":    { "tab.cycle": "b", "reader.close": "Escape", "classes.open": "c", "rotate.page": "r", "draw.pick": "Enter" /* … */ },
   "reader":  { "scrollStep": 90, "pageGap": 20, "maxPageWidth": 85, "smoothScroll": false,
                "cardWidth": 200, "panelOpacity": 55, "fullscreen": true,
@@ -197,7 +197,7 @@ export default {
   `pluginStaticUrl(id, path)`, and a proxy for remote resources whose host sends no
   CORS header, `proxyUrl(url)` (http and https only).
 
-Shipped: rotate, zoom, clock, timer, calendar, geogebra, video, draw, placement (see *Tools* above).
+Shipped: rotate, zoom, clock, timer, planning, geogebra, video, draw, placement (see *Tools* above).
 
 ### GeoGebra offline
 

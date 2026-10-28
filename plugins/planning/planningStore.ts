@@ -4,7 +4,7 @@ import { errorMessage, pluginStore } from "@/plugins/sdk";
 import * as P from "./planning";
 import { purgeBefore, type Parity } from "./week";
 
-const db = pluginStore("calendar");
+const db = pluginStore("planning");
 /**
  * Two keys, so a note typed during a lesson never rewrites the plannings, and
  * the other way round.
