@@ -82,3 +82,6 @@ Refusals answer `{error}` with 400, 404 or 409.
 - localStorage keys start with `zefpdf.` since the rename (they were `local-pdf.`), with
   no migration: window positions and plugin looks saved before it are back to defaults.
 - `install.sh` needs `git` and Bun (installed if missing); there is no Windows path.
+- `zefpdf update` runs `install.sh` on the checkout the command lives in, so the update
+  logic stays in one place. It is a bare first word, so a folder named `update` has to be
+  given as `./update`.

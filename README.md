@@ -37,9 +37,11 @@ This clones zefpdf into `~/.local/share/zefpdf` (or the folder given as an argum
 ```bash
 zefpdf               # serve the folder named in config.json and open the browser
 zefpdf ~/Lessons     # serve another folder (this run only)
+zefpdf update        # update to the latest version
 ```
 
-**Update** by running `./install.sh` again in the install folder, or `bun run update`: it
+**Update** with `zefpdf update` (or `./install.sh` again in the install folder, or
+`bun run update`): it
 pulls the latest version from GitHub, reinstalls dependencies and rebuilds. Your
 `config.json` and your classes (`data.sqlite`) are kept.
 
@@ -58,6 +60,7 @@ bun server/index.ts ~/Lessons        # serve another folder (this run only)
 bun server/index.ts --port 4000      # another port
 bun server/index.ts --config my.json # another config file
 bun server/index.ts --no-open        # don't launch a browser
+bun server/index.ts update           # pull, reinstall, rebuild (./install.sh)
 ```
 
 `bun link` in a checkout puts the `zefpdf` command on your PATH.

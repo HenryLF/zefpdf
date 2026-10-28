@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 // zefpdf server: `bun server/index.ts [folder] [--port N] [--config path] [--no-open]`
+//         update: `bun server/index.ts update` (pull main, reinstall, rebuild)
 //
 // Serves the built app from dist/, the files of one folder (the root), and the
 // JSON API the app runs on. Every API route is `guarded`: only a browser page on
@@ -75,7 +76,15 @@ export async function startServer(opts: ServerOptions = {}) {
   };
 }
 
-if (import.meta.main) {
+if (import.meta.main && Bun.argv[2] === "update") {
+  // install.sh on this checkout: it pulls, reinstalls dependencies and rebuilds.
+  // A folder named `update` is still served as `zefpdf ./update`.
+  const repo = join(import.meta.dir, "..");
+  const proc = Bun.spawn(["bash", join(repo, "install.sh"), repo], {
+    stdio: ["inherit", "inherit", "inherit"],
+  });
+  process.exit(await proc.exited);
+} else if (import.meta.main) {
   const { values, positionals } = parseArgs({
     args: Bun.argv.slice(2),
     options: {
