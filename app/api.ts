@@ -76,8 +76,8 @@ export const api = {
     setActiveClass: (id: number | null) =>
       send<Snapshot>("PUT", "/api/db/active-class", { id }),
     createClass: (name: string) => send<Snapshot>("POST", "/api/classes", { name }),
-    renameClass: (id: number, name: string) =>
-      send<Snapshot>("PUT", `/api/classes/${id}`, { name }),
+    updateClass: (id: number, fields: { name?: string; color?: string }) =>
+      send<Snapshot>("PUT", `/api/classes/${id}`, fields),
     deleteClass: (id: number) => send<Snapshot>("DELETE", `/api/classes/${id}`),
     addStudent: (classId: number, person: PersonFields) =>
       send<Snapshot>("POST", `/api/classes/${classId}/students`, person),

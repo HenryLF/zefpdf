@@ -1,11 +1,50 @@
-import { useState } from "preact/hooks";
+import { useEffect, useRef, useState } from "preact/hooks";
 import { cx } from "@/lib/cx";
 import { useActiveClass, useClasses, useDb, useStudents } from "@/state/db";
 import { Button } from "@/ui/atoms/Button";
+import { ColorInput } from "@/ui/atoms/ColorInput";
 import { IconButton } from "@/ui/atoms/IconButton";
 import { TextInput } from "@/ui/atoms/TextInput";
 import type { Class } from "@shared/api";
 import s from "./Dashboard.module.css";
+
+/** A dragged picker fires on every step; the write waits this long for the last. */
+const COLOR_MS = 300;
+
+/**
+ * The class's colour well. What is picked shows at once and is sent once the
+ * picker settles: each write answers a whole Snapshot, which a drag would
+ * otherwise ask for dozens of times.
+ */
+function ClassColor({ cls }: { cls: Class }) {
+  const setColor = useDb((s) => s.setClassColor);
+  const [picked, setPicked] = useState<string | null>(null);
+  const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+  const pending = useRef<string | null>(null);
+
+  const flush = () => {
+    clearTimeout(timer.current);
+    const c = pending.current;
+    pending.current = null;
+    if (c) void setColor(cls.id, c).then(() => setPicked(null));
+  };
+  // A row going away (a rename, a deletion elsewhere) still sends what was picked.
+  useEffect(() => flush, []);
+
+  return (
+    <span class={s.swatch} title="Class colour" data-class-color={cls.name}>
+      <ColorInput
+        value={picked ?? cls.color}
+        onChange={(c) => {
+          setPicked(c);
+          pending.current = c;
+          clearTimeout(timer.current);
+          timer.current = setTimeout(flush, COLOR_MS);
+        }}
+      />
+    </span>
+  );
+}
 
 function ClassRow({ cls, active, onPick }: { cls: Class; active: boolean; onPick: () => void }) {
   const setActive = useDb((s) => s.setActiveClass);
@@ -52,6 +91,7 @@ function ClassRow({ cls, active, onPick }: { cls: Class; active: boolean; onPick
         {cls.name}
         <span class={s.dim}>{count}</span>
       </button>
+      <ClassColor cls={cls} />
       <IconButton title="Rename" onClick={() => setEditing(cls.name)}>
         ✎
       </IconButton>

@@ -43,10 +43,10 @@ export const dbRoutes: Record<string, Route> = {
   },
 
   "/api/classes": {
-    POST: write((db, _req, b) => q.createClass(db, b.name)),
+    POST: write((db, _req, b) => q.createClass(db, b.name, b.color)),
   },
   "/api/classes/:id": {
-    PUT: write((db, req, b) => q.renameClass(db, param(req, "id"), b.name)),
+    PUT: write((db, req, b) => q.updateClass(db, param(req, "id"), { name: b.name, color: b.color })),
     DELETE: write((db, req) => q.deleteClass(db, param(req, "id"))),
   },
   "/api/classes/:id/students": {

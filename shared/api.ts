@@ -26,8 +26,26 @@ export interface BrowseResult {
 export interface Class {
   id: number;
   name: string;
+  /** #rrggbb — how the class is told apart wherever it is shown */
+  color: string;
   createdAt: number;
 }
+
+/**
+ * The colours a new class is given, the least used first. Mid-tone, so each
+ * reads both on the dark interface and on a white page. Also what migration 2
+ * spread over the classes that predate colours — keep the order.
+ */
+export const CLASS_COLORS = [
+  "#4e79a7",
+  "#f28e2b",
+  "#59a14f",
+  "#e15759",
+  "#b07aa1",
+  "#edc948",
+  "#76b7b2",
+  "#ff9da7",
+] as const;
 
 /** A person's gender; null when not given. */
 export type Gender = "f" | "m";

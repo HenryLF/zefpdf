@@ -121,6 +121,10 @@
   white-space: nowrap;
 }
 
+.swatch {
+  display: flex;
+}
+
 .dim {
   color: var(--text-dim);
   font-weight: normal;

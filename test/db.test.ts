@@ -3,7 +3,7 @@ import { Database } from "bun:sqlite";
 import { mkdtemp, rm } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import type { PersonFields } from "@shared/api";
+import { CLASS_COLORS, type PersonFields } from "@shared/api";
 import * as q from "../server/db";
 
 let dir: string;
@@ -148,7 +148,7 @@ test("class names are unique", () => {
   q.createClass(db, "5A");
   expect(() => q.createClass(db, "5A")).toThrow(q.DbError);
   const b = q.createClass(db, "5B");
-  expect(() => q.renameClass(db, b, "5A")).toThrow(q.DbError);
+  expect(() => q.updateClass(db, b, { name: "5A" })).toThrow(q.DbError);
 });
 
 test("an import links known people, copies or adds the rest, all or none", () => {
@@ -216,5 +216,74 @@ test("dbFor reopens when the file changes", async () => {
     expect(q.snapshot(q.dbFor(file)).classes.map((c) => c.name)).toEqual(["In first"]);
   } finally {
     q.closeDb();
+  }
+});
+
+test("a new class gets the least used palette colour", () => {
+  const a = q.createClass(db, "5A");
+  const b = q.createClass(db, "5B");
+  const colors = () => Object.fromEntries(q.snapshot(db).classes.map((c) => [c.id, c.color]));
+  expect(colors()[a]).toBe(CLASS_COLORS[0]);
+  expect(colors()[b]).toBe(CLASS_COLORS[1]);
+  // Taking the second colour off 5B frees it for the next class.
+  q.updateClass(db, b, { color: CLASS_COLORS[0] });
+  const c = q.createClass(db, "5C");
+  const d = q.createClass(db, "5D", "#ABCDEF");
+  expect(colors()[c]).toBe(CLASS_COLORS[1]);
+  expect(colors()[d]).toBe("#abcdef");
+});
+
+test("a class is recoloured, renamed, or both; a bad colour is refused", () => {
+  const c = q.createClass(db, "5A");
+  q.updateClass(db, c, { color: "#FF0000" });
+  q.updateClass(db, c, { name: "5A bis" });
+  expect(q.snapshot(db).classes[0]).toMatchObject({ name: "5A bis", color: "#ff0000" });
+  for (const bad of ["red", "#12345", "#gggggg", 3]) {
+    expect(() => q.updateClass(db, c, { color: bad })).toThrow("color must be #rrggbb");
+  }
+  expect(() => q.updateClass(db, c, {})).toThrow(q.DbError);
+  expect(() => q.updateClass(db, 999, { color: "#000000" })).toThrow("no such class");
+});
+
+test("migrating a version-1 database keeps all its data and colours its classes", () => {
+  const file = join(dir, "v1.sqlite");
+  const old = new Database(file, { create: true, strict: true });
+  old.run("PRAGMA foreign_keys=ON");
+  old.run(q.MIGRATIONS[0]!);
+  old.run("PRAGMA user_version = 1");
+  old.run("INSERT INTO classes (id, name) VALUES (1, '5A'), (2, '5B'), (9, '4C')");
+  old.run("INSERT INTO people (id, last, first, gender) VALUES (1, 'Alpha', 'A', 'f'), (2, 'Beta', 'B', NULL)");
+  old.run("INSERT INTO enrolments (id, class_id, person_id, position) VALUES (1, 1, 1, 0), (2, 1, 2, 1), (3, 2, 1, 0)");
+  old.run("INSERT INTO seating_links (class_id, a_id, b_id, kind) VALUES (1, 1, 2, 'apart')");
+  old.run(`INSERT INTO plugin_data VALUES ('calendar', 'notes', '{"k":"v"}')`);
+  old.run(`INSERT INTO meta VALUES ('activeClassId', '2')`);
+  old.close();
+
+  const migrated = q.openDb(file);
+  try {
+    const v = migrated.query("PRAGMA user_version").get() as { user_version: number };
+    expect(v.user_version).toBe(q.MIGRATIONS.length);
+    const snap = q.snapshot(migrated);
+    expect(snap.classes.map((c) => [c.id, c.name, c.color])).toEqual([
+      [9, "4C", CLASS_COLORS[0]],
+      [1, "5A", CLASS_COLORS[0]],
+      [2, "5B", CLASS_COLORS[1]],
+    ]);
+    expect(snap.people.map((p) => [p.id, p.last, p.gender])).toEqual([
+      [1, "Alpha", "f"],
+      [2, "Beta", null],
+    ]);
+    expect(snap.enrolments.map((e) => [e.id, e.classId, e.personId])).toEqual([
+      [1, 1, 1],
+      [2, 1, 2],
+      [3, 2, 1],
+    ]);
+    expect(snap.links).toMatchObject([{ classId: 1, aId: 1, bId: 2, kind: "apart" }]);
+    expect(snap.activeClassId).toBe(2);
+    expect(q.pluginData(migrated, "calendar")).toEqual({ notes: { k: "v" } });
+    const fk = migrated.query("PRAGMA foreign_key_check").all();
+    expect(fk).toEqual([]);
+  } finally {
+    migrated.close();
   }
 });

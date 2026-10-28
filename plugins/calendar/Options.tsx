@@ -2,7 +2,7 @@ import { CheckOption, ColorOption, OptionHint, AppearanceOptions } from "@/plugi
 import { useCalendar } from "./store";
 
 export function Options() {
-  const showWeekNumbers = useCalendar((s) => s.showWeekNumbers);
+  const showWeekend = useCalendar((s) => s.showWeekend);
   const todayColor = useCalendar((s) => s.todayColor);
   const appearance = useCalendar((s) => s.appearance);
   const set = useCalendar((s) => s.set);
@@ -11,9 +11,9 @@ export function Options() {
   return (
     <>
       <CheckOption
-        label="Week numbers"
-        checked={showWeekNumbers}
-        onChange={(v) => set("showWeekNumbers", v)}
+        label="Weekend days"
+        checked={showWeekend}
+        onChange={(v) => set("showWeekend", v)}
       />
       <ColorOption
         label="Today"
@@ -21,9 +21,11 @@ export function Options() {
         onChange={(v) => set("todayColor", v)}
       />
       <OptionHint>
-        Weeks run Monday to Sunday; days from the months either side are dimmed.
-        The month name goes back to today when clicked. The toolbar's Calendar
-        button puts it on screen and takes it off again.
+        There are two plannings, one for even weeks and one for odd weeks, by ISO week
+        number. A year with 53 weeks therefore has two odd weeks in a row. ✎ in the panel
+        edits the planning of the week on screen. Click a lesson to write its notes for
+        that week. Typing @[title] links a PDF of the folder, and clicking the link opens
+        it. Notes from more than a month ago are removed.
       </OptionHint>
 
       <AppearanceOptions value={appearance} onChange={setAppearance} />

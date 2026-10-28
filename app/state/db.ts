@@ -23,6 +23,8 @@ interface DbStore {
   setActiveClass(id: number | null): Promise<boolean>;
   createClass(name: string): Promise<boolean>;
   renameClass(id: number, name: string): Promise<boolean>;
+  /** #rrggbb */
+  setClassColor(id: number, color: string): Promise<boolean>;
   deleteClass(id: number): Promise<boolean>;
   addStudent(classId: number, person: PersonFields): Promise<boolean>;
   importStudents(classId: number, rows: ImportRow[]): Promise<boolean>;
@@ -69,7 +71,8 @@ export const useDb = create<DbStore>()((set) => {
 
     setActiveClass: (id) => write(() => api.db.setActiveClass(id)),
     createClass: (name) => write(() => api.db.createClass(name)),
-    renameClass: (id, name) => write(() => api.db.renameClass(id, name)),
+    renameClass: (id, name) => write(() => api.db.updateClass(id, { name })),
+    setClassColor: (id, color) => write(() => api.db.updateClass(id, { color })),
     deleteClass: (id) => write(() => api.db.deleteClass(id)),
     addStudent: (classId, person) => write(() => api.db.addStudent(classId, person)),
     importStudents: (classId, rows) => write(() => api.db.importStudents(classId, rows)),

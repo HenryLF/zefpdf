@@ -1,6 +1,6 @@
 {
   "server": {
-    "cwd": "/home/zub/Documents/AbbeGregoire2026",
+    "cwd": "/home/zub/Documents/AbbeGregoire2026/src",
     "port": 3000,
     "ignore": [
       "node_modules"

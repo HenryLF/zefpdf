@@ -11,7 +11,7 @@
 import { Database } from "bun:sqlite";
 import { mkdirSync } from "node:fs";
 import { dirname, join } from "node:path";
-import { GENDERS } from "@shared/api";
+import { CLASS_COLORS, GENDERS } from "@shared/api";
 import type {
   Class,
   Enrolment,
@@ -65,6 +65,16 @@ export const MIGRATIONS: string[] = [
   CREATE TABLE plugin_data (plugin_id TEXT NOT NULL, key TEXT NOT NULL, json TEXT NOT NULL,
     PRIMARY KEY (plugin_id, key));
   CREATE TABLE meta (key TEXT PRIMARY KEY, json TEXT NOT NULL);
+  `,
+  // 2: a colour per class. Added in place — no table rebuild, so every id and
+  // the enrolments and links pointing at them stay as they are — and the
+  // classes already there are spread over the palette rather than all left
+  // the default.
+  `
+  ALTER TABLE classes ADD COLUMN color TEXT NOT NULL DEFAULT '${CLASS_COLORS[0]}'
+    CHECK (color GLOB '#[0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f][0-9a-f]');
+  UPDATE classes SET color = CASE (id - 1) % ${CLASS_COLORS.length}
+    ${CLASS_COLORS.map((c, i) => `WHEN ${i} THEN '${c}'`).join(" ")} END;
   `,
 ];
 
@@ -132,7 +142,7 @@ function setMeta(db: Database, key: string, value: unknown) {
 
 export function snapshot(db: Database): Snapshot {
   const classes = db
-    .query("SELECT id, name, created_at AS createdAt FROM classes ORDER BY name COLLATE NOCASE, id")
+    .query("SELECT id, name, color, created_at AS createdAt FROM classes ORDER BY name COLLATE NOCASE, id")
     .all() as Class[];
   const people = db
     .query(
@@ -190,6 +200,23 @@ function birthDate(v: unknown): string | null {
   return v;
 }
 
+/** "#rrggbb", lowercased: the only form `<input type="color">` gives and the schema takes. */
+function color(v: unknown) {
+  if (typeof v !== "string" || !/^#[0-9a-f]{6}$/i.test(v)) throw new DbError("color must be #rrggbb");
+  return v.toLowerCase();
+}
+
+/** The palette colour fewest classes have, the first of them on a tie. */
+function nextColor(db: Database) {
+  const used = new Map<string, number>();
+  for (const { color } of db.query("SELECT color FROM classes").all() as { color: string }[]) {
+    used.set(color, (used.get(color) ?? 0) + 1);
+  }
+  let best: string = CLASS_COLORS[0];
+  for (const c of CLASS_COLORS) if ((used.get(c) ?? 0) < (used.get(best) ?? 0)) best = c;
+  return best;
+}
+
 function personFields(v: Partial<PersonFields> | null | undefined): PersonFields {
   const p = v ?? {};
   return {
@@ -210,21 +237,30 @@ function isUnique(e: unknown) {
   return e instanceof Error && /UNIQUE constraint failed/.test(e.message);
 }
 
-export function createClass(db: Database, name: unknown) {
+/** A new class, in `c` or else the least used palette colour. */
+export function createClass(db: Database, name: unknown, c?: unknown) {
   const n = text(name, "name");
+  const col = c === undefined || c === null ? nextColor(db) : color(c);
   try {
-    return (db.query("INSERT INTO classes (name) VALUES (?) RETURNING id").get(n) as { id: number }).id;
+    return (
+      db.query("INSERT INTO classes (name, color) VALUES (?, ?) RETURNING id").get(n, col) as { id: number }
+    ).id;
   } catch (e) {
     if (isUnique(e)) throw new DbError(`a class named "${n}" already exists`, 409);
     throw e;
   }
 }
 
-export function renameClass(db: Database, classId: unknown, name: unknown) {
+/** Rename a class, recolour it, or both; whichever is given. */
+export function updateClass(db: Database, classId: unknown, fields: { name?: unknown; color?: unknown }) {
   const cid = id(classId, "class id");
-  const n = text(name, "name");
+  const n = fields.name === undefined ? null : text(fields.name, "name");
+  const col = fields.color === undefined ? null : color(fields.color);
+  if (n === null && col === null) throw new DbError("name or color required");
   try {
-    const { changes } = db.query("UPDATE classes SET name = ? WHERE id = ?").run(n, cid);
+    const { changes } = db
+      .query("UPDATE classes SET name = coalesce(?, name), color = coalesce(?, color) WHERE id = ?")
+      .run(n, col, cid);
     if (!changes) throw new DbError("no such class", 404);
   } catch (e) {
     if (isUnique(e)) throw new DbError(`a class named "${n}" already exists`, 409);

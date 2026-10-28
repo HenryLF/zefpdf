@@ -1,17 +1,21 @@
-/* A month, always six rows so the card keeps one height all year.
-   Sizes are in `em`, so the appearance slider scales the whole grid. */
+/* A week of the planning, one column per day, and the note of the lesson
+   selected underneath. Sizes are in `em`, so the appearance slider scales the
+   whole panel; padding, border and colours come from the surface. */
 
-.card {
-  /* Only the card: the Widget around it decides where it sits, and its border
-     stays — a grid needs an edge, unlike the clock. */
-  composes: surface from "../shared/surface.module.css";
+.body {
+  composes: surface plain from "../shared/surface.module.css";
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+  min-height: 0;
 }
 
 .head {
   display: flex;
   align-items: center;
   gap: 2px;
-  margin-bottom: 6px;
 }
 
 .title {
@@ -21,51 +25,242 @@
   color: inherit;
   font: inherit;
   font-weight: 600;
-  /* Intl gives "septembre 2026". */
-  text-transform: capitalize;
   cursor: pointer;
+}
+
+.clone {
+  margin-left: 0.4em;
+}
+
+.parity {
+  font-weight: 400;
+  opacity: 0.65;
+}
+
+.banner {
+  margin: 0;
+  padding: 0.3em 0.6em;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  font-size: 0.85em;
+}
+
+/* Everything below the header scrolls together, so a long note never pushes
+   the week out of the panel. */
+.scroll {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(7, 2.2em);
-  gap: 1px;
-  text-align: center;
-}
-
-/* With ISO week numbers, one narrower column in front. */
-.withWeeks {
-  grid-template-columns: 1.8em repeat(7, 2.2em);
-}
-
-.dow {
-  padding-bottom: 3px;
-  font-size: 0.8em;
-  opacity: 0.65;
-  text-transform: capitalize;
-}
-
-.week {
-  align-self: center;
-  font-size: 0.72em;
-  opacity: 0.45;
+  gap: 6px;
+  align-items: start;
 }
 
 .day {
-  padding: 0.25em 0;
-  border: 1px solid transparent;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 4px;
+  border: 1px solid var(--border);
   border-radius: var(--radius-sm);
-}
-
-/* The leading and trailing days of the neighbouring months: still there, so
-   the weeks read as whole weeks, but plainly not part of this month. */
-.out {
-  opacity: 0.3;
 }
 
 /* Today, in the configured colour. */
 .now {
   border-color: var(--today);
+}
+
+.now .dow {
   color: var(--today);
+}
+
+.dow {
+  margin: 0 0 2px;
+  font-size: 0.85em;
   font-weight: 600;
+  text-align: center;
+  text-transform: capitalize;
+}
+
+.date {
+  font-weight: 400;
+  opacity: 0.65;
+}
+
+.item {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  width: 100%;
+  padding: 0.3em 0.45em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface-hover);
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+/* An item of a class, in that class's colour: an edge to find it by and a
+   tint to read the week by. Without a class an item keeps the plain look. */
+.colored {
+  border-left: 4px solid var(--class-color);
+}
+
+/* Two classes deep, so `.editItem`'s own border, further down, does not undo
+   the edge, and a selected item keeps it under the accent ring. */
+.item.colored,
+.editItem.colored {
+  border-left: 4px solid var(--class-color);
+  background: color-mix(in srgb, var(--class-color) 22%, var(--surface-hover));
+}
+
+.selected {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent);
+}
+
+.selected.colored {
+  border-left-color: var(--class-color);
+}
+
+.name {
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.class {
+  font-size: 0.8em;
+  opacity: 0.75;
+}
+
+/* The note's first line, so a lesson with notes shows it at a glance. */
+.preview {
+  max-width: 100%;
+  overflow: hidden;
+  font-size: 0.75em;
+  font-style: italic;
+  opacity: 0.6;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editItem {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding: 4px;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius-sm);
+}
+
+.editItem > input,
+.editItem > select {
+  width: 100%;
+  min-width: 0;
+}
+
+.tools {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.add {
+  align-self: center;
+}
+
+.note {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.noteHead {
+  margin: 0;
+  font-size: 0.9em;
+}
+
+.noteHead.colored {
+  padding-left: 0.4em;
+}
+
+.editor {
+  position: relative;
+}
+
+.textarea {
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 5em;
+  padding: 0.4em 0.5em;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--text);
+  font: inherit;
+  resize: vertical;
+}
+
+.suggest {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 100%;
+  z-index: 1;
+  margin: 2px 0 0;
+  padding: 2px;
+  list-style: none;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.option {
+  padding: 0.25em 0.5em;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+}
+
+.optionActive {
+  background: var(--accent-dim);
+}
+
+.dir {
+  opacity: 0.6;
+}
+
+.rendered {
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.ref {
+  display: inline;
+  padding: 0 0.25em;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  color: inherit;
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+/* A title no PDF answers to: still shown, so the typo can be found. */
+.missing {
+  background: none;
+  opacity: 0.55;
+  text-decoration: line-through;
+  cursor: default;
 }

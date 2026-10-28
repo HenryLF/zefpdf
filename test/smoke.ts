@@ -1309,28 +1309,97 @@ async function main() {
       );
     });
 
-    await check("the calendar draws six whole weeks around today", async () => {
-      const grid = await waitFor("the month grid", () =>
-        page!.eval<{ cells: number; today: number; inMonth: number }>(
+    await check("the planning shows this week, its notes and their PDF links", async () => {
+      // Every weekday gets one item, so whichever day the test runs has one.
+      // A class of its own, deleted again at the end: the classes checks
+      // further down start from an empty database.
+      const made = await page!.eval<{ classes: { id: number; name: string }[] }>(
+        `fetch("/api/classes", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ name: "Planning", color: "#00ff00" }),
+        }).then(r => r.json())`,
+      );
+      const classId = made.classes.find((c) => c.name === "Planning")!.id;
+      const items = [0, 1, 2, 3, 4].map((day) => ({
+        id: `smoke-${day}`,
+        day,
+        name: `Lesson ${day}`,
+        classId: day === 2 ? classId : null,
+      }));
+      const now = new Date();
+      const monday = new Date(now.getFullYear(), now.getMonth(), now.getDate() - ((now.getDay() + 6) % 7));
+      const key = [monday.getFullYear(), monday.getMonth() + 1, monday.getDate()]
+        .map((n) => String(n).padStart(2, "0"))
+        .join("-");
+      const notes = { [`${key}:smoke-2`]: "Read @[alpha] first\nthen @[nowhere]" };
+      // Through the app's own page, so the request carries its origin.
+      await page!.eval(
+        `(async () => {
+          const put = (k, v) => fetch("/api/plugins/calendar/data/" + k, {
+            method: "PUT",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(v),
+          });
+          await put("planning", ${JSON.stringify({ even: items, odd: items })});
+          await put("notes", ${JSON.stringify(notes)});
+        })()`,
+      );
+      await seedPlugin(page!, "calendar", { visible: true });
+      await page!.reload();
+
+      const week = await waitFor("the week", () =>
+        page!.eval<{ days: number; today: number; items: number } | false>(
           `(() => {
-            const cells = [...document.querySelectorAll("[data-day]")];
+            const days = [...document.querySelectorAll("[data-day]")];
+            const items = document.querySelectorAll("[data-item]").length;
+            if (!items) return false;
             return {
-              cells: cells.length,
-              today: cells.filter(c => c.dataset.today === "true").length,
-              inMonth: cells.filter(c => c.dataset.inMonth === "true").length,
+              days: days.length,
+              today: days.filter(d => d.dataset.today === "true").length,
+              items,
             };
           })()`,
         ),
       );
-      assert(grid.cells === 42, `grid has ${grid.cells} cells, expected 42`);
-      assert(grid.today === 1, `${grid.today} cells marked today`);
+      assert(week.days === 5, `${week.days} day columns, expected 5`);
+      const weekday = (now.getDay() + 6) % 7 < 5;
+      assert(week.today === (weekday ? 1 : 0), `${week.today} columns marked today`);
+      assert(week.items === 5, `${week.items} items, expected 5`);
 
-      const now = new Date();
-      const days = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-      assert(
-        grid.inMonth === days,
-        `${grid.inMonth} cells in month, expected ${days}`,
+      const edges = await page!.eval<{ colored: string; plain: string }>(
+        `({
+          colored: getComputedStyle(document.querySelector('[data-item="smoke-2"]')).borderLeftColor,
+          plain: getComputedStyle(document.querySelector('[data-item="smoke-1"]')).borderLeftColor,
+        })`,
       );
+      assert(/\b0,\s*255,\s*0\b/.test(edges.colored), `the class's item is edged ${edges.colored}`);
+      assert(edges.plain !== edges.colored, "an item without a class took a colour");
+
+      await page!.eval(`document.querySelector('[data-item="smoke-2"]').click()`);
+      const refs = await waitFor("the rendered note", () =>
+        page!.eval<{ links: string[]; text: string } | false>(
+          `(() => {
+            const r = document.querySelector('[data-note="rendered"]');
+            if (!r) return false;
+            return {
+              links: [...r.querySelectorAll("[data-ref]")].map(b => b.dataset.ref),
+              text: r.innerText,
+            };
+          })()`,
+        ),
+      );
+      assert(refs.links.join() === "alpha.pdf", `links ${refs.links.join()}`);
+      assert(refs.text.includes("nowhere"), `the unresolved ref is not shown: ${refs.text}`);
+
+      await page!.eval(`document.querySelector('[data-ref="alpha.pdf"]').click()`);
+      await waitFor("alpha.pdf opened", () =>
+        page!.eval<boolean>(`location.hash === "#/f/alpha.pdf"`),
+      );
+      // A panel this size would sit over the widgets the next checks click.
+      await seedPlugin(page!, "calendar", { visible: false });
+      await page!.eval(`fetch("/api/classes/${classId}", { method: "DELETE" })`);
+      await page!.eval(`location.hash = ""`);
     });
 
     await check("the timer counts down and Reset puts the time back", async () => {
@@ -1690,6 +1759,23 @@ async function main() {
       assert(snap.classes[0]!.id === snap.activeClassId, "the new class is not the active one");
       await waitFor("the roster form", () =>
         page!.eval<boolean>(`!!document.querySelector('input[placeholder="Last name"]')`),
+      );
+    });
+
+    await check("a class's colour is picked from its swatch and kept", async () => {
+      await page!.eval(`(() => {
+        const el = document.querySelector('[data-class-color="5A"] input[type="color"]');
+        el.value = "#123456";
+        el.dispatchEvent(new Event("input", { bubbles: true }));
+      })()`);
+      await waitFor("the colour stored", async () =>
+        (await snapshot()).classes.find((c) => c.name === "5A")?.color === "#123456",
+      );
+      await page!.reload();
+      await waitFor("the swatch after a reload", () =>
+        page!.eval<boolean>(
+          `document.querySelector('[data-class-color="5A"] input[type="color"]')?.value === "#123456"`,
+        ),
       );
     });
 

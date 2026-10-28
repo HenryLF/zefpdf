@@ -9,16 +9,18 @@ import {
 
 const KEY = "zefpdf.plugin.calendar";
 
+/** The panel's look and switch. The plannings themselves are in `planningStore`. */
 interface Persisted extends WithAppearance {
   visible: boolean;
-  showWeekNumbers: boolean;
+  /** Saturday and Sunday as columns too */
+  showWeekend: boolean;
   /** #rrggbb — the ring around today */
   todayColor: string;
 }
 
 const DEFAULTS: Persisted = {
   visible: false,
-  showWeekNumbers: false,
+  showWeekend: false,
   todayColor: "#6aa6ff",
   appearance: {
     ...APPEARANCE_DEFAULTS,

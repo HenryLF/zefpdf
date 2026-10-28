@@ -80,8 +80,9 @@ bun server/index.ts --no-open        # don't launch a browser
 - **Reader** — pages fit the window, text stays selectable, links work. `PageUp`/`PageDown`
   scroll by a share of a page (a whole page when pressed twice quickly); `Tab` opens the
   page strip and outline; `Escape` closes the strip, then the tab.
-- **Classes** — `c`, or **Manage** in the tab bar, opens the classes tab: create, rename
-  and delete classes; add students one row at a time, or **Import CSV…** a roster (Pronote's
+- **Classes** — `c`, or **Manage** in the tab bar, opens the classes tab: create, rename,
+  colour and delete classes (each class gets its own colour, which the calendar uses for
+  its lessons); add students one row at a time, or **Import CSV…** a roster (Pronote's
   *Élèves* export: name, *Né(e) le*, *Sexe*; other columns are ignored); record seating
   constraints (*sit together* / *sit apart*).
   A person outlives their classes: when an imported name is already known, you choose to
@@ -109,7 +110,8 @@ bun server/index.ts --no-open        # don't launch a browser
 | **draw** | random student of the active class, shown in a pill for a few seconds |
 | **placement** | seating plan: lay out your classroom, then place the active class, honouring *together* / *apart* |
 | **timer** | countdown for an activity |
-| **clock** / **calendar** | the time, or the date, on screen |
+| **clock** | the time and date on screen |
+| **calendar** | this week's planning, with one planning for even weeks and one for odd weeks. Each lesson has a class and per-week notes, and `@[title]` in a note opens that PDF |
 | **zoom** | magnify and pan a part of the page |
 | **rotate** | turn a scanned page the right way up |
 | **geogebra** | the GeoGebra calculator, online or fully offline, with your `.ggb` files |
