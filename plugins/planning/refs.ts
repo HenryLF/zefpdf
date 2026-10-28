@@ -2,21 +2,19 @@
 
 import type { FileEntry } from "@/plugins/sdk";
 
-export type Segment = { text: string } | { ref: string };
-
 const REF = /@\[([^\]\n]+)\]/g;
 
-/** A note cut into plain text and references, in order. */
-export function parseNote(text: string): Segment[] {
-  const out: Segment[] = [];
-  let last = 0;
+/** The title of the reference `pos` falls inside, or null. */
+export function refAt(text: string, pos: number): string | null {
   for (const m of text.matchAll(REF)) {
-    if (m.index > last) out.push({ text: text.slice(last, m.index) });
-    out.push({ ref: m[1]!.trim() });
-    last = m.index + m[0].length;
+    if (pos >= m.index && pos <= m.index + m[0].length) return m[1]!.trim();
   }
-  if (last < text.length) out.push({ text: text.slice(last) });
-  return out;
+  return null;
+}
+
+/** The titles a note references, each once, in order. */
+export function refsIn(text: string): string[] {
+  return [...new Set([...text.matchAll(REF)].map((m) => m[1]!.trim()))];
 }
 
 const bare = (name: string) => name.toLowerCase().replace(/\.pdf$/, "");
@@ -38,16 +36,26 @@ export function resolveRef(ref: string, pdfs: FileEntry[]): FileEntry | null {
   return best;
 }
 
+/** A reference being typed: where its `@` is, and what follows it so far. */
+export interface RefQuery {
+  start: number;
+  query: string;
+}
+
 /**
- * The title being typed: what follows an `@[` left open before `caret`, or
- * null when the caret is not inside one.
+ * The reference being typed before `caret`: an `@` at the start of a word
+ * (so an e-mail address is left alone), optionally followed by `[`, then the
+ * title so far — which may hold spaces, but not a newline or a `]`.
+ * Null when the caret is not in one.
  */
-export function refQuery(text: string, caret: number): string | null {
+export function refQuery(text: string, caret: number): RefQuery | null {
   const before = text.slice(0, caret);
-  const open = before.lastIndexOf("@[");
-  if (open === -1) return null;
-  const typed = before.slice(open + 2);
-  return /[\]\n]/.test(typed) ? null : typed;
+  const start = before.lastIndexOf("@");
+  if (start === -1) return null;
+  if (start > 0 && !/[\s(]/.test(before[start - 1]!)) return null;
+  const typed = before.slice(start + 1).replace(/^\[/, "");
+  if (/[\]\n]/.test(typed)) return null;
+  return { start, query: typed };
 }
 
 /** The PDFs whose name contains `query`, nearest the root first. */

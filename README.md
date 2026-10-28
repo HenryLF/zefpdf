@@ -111,7 +111,7 @@ bun server/index.ts --no-open        # don't launch a browser
 | **placement** | seating plan: lay out your classroom, then place the active class, honouring *together* / *apart* |
 | **timer** | countdown for an activity |
 | **clock** | the time and date on screen |
-| **calendar** | this week's planning, with one planning for even weeks and one for odd weeks. Each lesson has a class and per-week notes, and `@[title]` in a note opens that PDF |
+| **calendar** | this week's planning, with one planning for even weeks and one for odd weeks. Each lesson has a class and per-week notes, typing `@` in a note links a PDF, and the lesson's card then shows a button that opens it |
 | **zoom** | magnify and pan a part of the page |
 | **rotate** | turn a scanned page the right way up |
 | **geogebra** | the GeoGebra calculator, online or fully offline, with your `.ggb` files |

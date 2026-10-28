@@ -8,7 +8,7 @@ import {
   readPlanning,
   type Item,
 } from "../plugins/calendar/planning";
-import { parseNote, refQuery, resolveRef, suggest } from "../plugins/calendar/refs";
+import { refAt, refQuery, refsIn, resolveRef, suggest } from "../plugins/calendar/refs";
 import {
   addWeeks,
   dateKey,
@@ -110,15 +110,18 @@ describe("planning", () => {
 describe("references", () => {
   const pdfs = [file("nested/Alpha.pdf"), file("alpha.pdf"), file("beta.pdf")];
 
-  test("a note is cut into text and references", () => {
-    expect(parseNote("Read @[alpha] then @[ nested/Alpha.pdf ].\nDone")).toEqual([
-      { text: "Read " },
-      { ref: "alpha" },
-      { text: " then " },
-      { ref: "nested/Alpha.pdf" },
-      { text: ".\nDone" },
-    ]);
-    expect(parseNote("@[]  @[open")).toEqual([{ text: "@[]  @[open" }]);
+  test("the reference under a click is found", () => {
+    const t = "Read @[alpha] then @[ nested/Alpha.pdf ].";
+    expect(refAt(t, 7)).toBe("alpha");
+    expect(refAt(t, 5)).toBe("alpha"); // on the @
+    expect(refAt(t, 30)).toBe("nested/Alpha.pdf");
+    expect(refAt(t, 2)).toBeNull();
+    expect(refAt("@[] @[open", 2)).toBeNull();
+  });
+
+  test("a note's references are listed once each, in order", () => {
+    expect(refsIn("@[beta] then @[ alpha ], @[beta] again\n@[open")).toEqual(["beta", "alpha"]);
+    expect(refsIn("no links")).toEqual([]);
   });
 
   test("a reference resolves by path, then by name nearest the root", () => {
@@ -128,13 +131,19 @@ describe("references", () => {
     expect(resolveRef("gamma", pdfs)).toBeNull();
   });
 
-  test("the title being typed is found before the caret", () => {
-    const t = "see @[al";
-    expect(refQuery(t, t.length)).toBe("al");
-    expect(refQuery("see @[alpha] x", 14)).toBeNull();
-    expect(refQuery("@[a\nb", 5)).toBeNull();
-    expect(refQuery("plain", 5)).toBeNull();
+  test("an @ starts a reference, with or without its bracket", () => {
+    const q = (t: string, caret = t.length) => refQuery(t, caret);
+    expect(q("see @")).toEqual({ start: 4, query: "" });
+    expect(q("see @al")).toEqual({ start: 4, query: "al" });
+    expect(q("see @[al")).toEqual({ start: 4, query: "al" });
+    expect(q("@my file")).toEqual({ start: 0, query: "my file" });
+    expect(q("(@x")).toEqual({ start: 1, query: "x" });
+    expect(q("mail me@school")).toBeNull();
+    expect(q("see @[alpha] x")).toBeNull();
+    expect(q("@a\nb")).toBeNull();
+    expect(q("plain")).toBeNull();
     expect(suggest("ALP", pdfs).map((f) => f.path)).toEqual(["alpha.pdf", "nested/Alpha.pdf"]);
+    expect(suggest("", pdfs)).toHaveLength(3);
   });
 });
 

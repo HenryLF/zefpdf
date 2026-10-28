@@ -1309,7 +1309,7 @@ async function main() {
       );
     });
 
-    await check("the planning shows this week, its notes and their PDF links", async () => {
+    await check("the planning shows this week, and @ links a PDF in a note", async () => {
       // Every weekday gets one item, so whichever day the test runs has one.
       // A class of its own, deleted again at the end: the classes checks
       // further down start from an empty database.
@@ -1332,7 +1332,7 @@ async function main() {
       const key = [monday.getFullYear(), monday.getMonth() + 1, monday.getDate()]
         .map((n) => String(n).padStart(2, "0"))
         .join("-");
-      const notes = { [`${key}:smoke-2`]: "Read @[alpha] first\nthen @[nowhere]" };
+      const notes = { [`${key}:smoke-2`]: "Read first. " };
       // Through the app's own page, so the request carries its origin.
       await page!.eval(
         `(async () => {
@@ -1376,24 +1376,56 @@ async function main() {
       assert(/\b0,\s*255,\s*0\b/.test(edges.colored), `the class's item is edged ${edges.colored}`);
       assert(edges.plain !== edges.colored, "an item without a class took a colour");
 
-      await page!.eval(`document.querySelector('[data-item="smoke-2"]').click()`);
-      const refs = await waitFor("the rendered note", () =>
-        page!.eval<{ links: string[]; text: string } | false>(
-          `(() => {
-            const r = document.querySelector('[data-note="rendered"]');
-            if (!r) return false;
-            return {
-              links: [...r.querySelectorAll("[data-ref]")].map(b => b.dataset.ref),
-              text: r.innerText,
-            };
-          })()`,
+      await page!.eval(`document.querySelector('[data-item="smoke-2"] [data-select]').click()`);
+      await waitFor("the note", () =>
+        page!.eval<boolean>(`document.querySelector("textarea")?.value === "Read first. "`),
+      );
+      assert(
+        !(await page!.eval<boolean>(`!!document.querySelector('[data-note="rendered"]')`)),
+        "the note is still read back under the textarea",
+      );
+
+      // Typed for real, so the caret and key handling are the browser's own.
+      await page!.eval(`(() => {
+        const t = document.querySelector("textarea");
+        t.focus();
+        t.setSelectionRange(t.value.length, t.value.length);
+      })()`);
+      for (const k of ["@", "a", "l"]) await page!.press(k);
+      await waitFor("alpha.pdf suggested", () =>
+        page!.eval<boolean>(`!!document.querySelector('[data-suggest="alpha.pdf"]')`),
+      );
+      await page!.press("Enter");
+      const typed = await waitFor("the reference completed", () =>
+        page!.eval<string | false>(
+          `(() => { const v = document.querySelector("textarea").value; return v.includes("@[") ? v : false; })()`,
         ),
       );
-      assert(refs.links.join() === "alpha.pdf", `links ${refs.links.join()}`);
-      assert(refs.text.includes("nowhere"), `the unresolved ref is not shown: ${refs.text}`);
+      assert(typed === "Read first. @[alpha]", `the note reads "${typed}"`);
 
-      await page!.eval(`document.querySelector('[data-ref="alpha.pdf"]').click()`);
+      // Ctrl+click inside the reference opens the PDF.
+      await page!.eval(`(() => {
+        const t = document.querySelector("textarea");
+        t.setSelectionRange(15, 15);
+        t.dispatchEvent(new MouseEvent("click", { bubbles: true, ctrlKey: true }));
+      })()`);
       await waitFor("alpha.pdf opened", () =>
+        page!.eval<boolean>(`location.hash === "#/f/alpha.pdf"`),
+      );
+
+      // The card shows the note's links, not its text, and one opens the PDF.
+      await page!.eval(`location.hash = ""`);
+      await waitFor("back to the library", () => page!.eval<boolean>(`location.hash === ""`));
+      const card = await page!.eval<{ links: string[]; text: string }>(
+        `(() => {
+          const c = document.querySelector('[data-item="smoke-2"]');
+          return { links: [...c.querySelectorAll("[data-ref]")].map(b => b.dataset.ref), text: c.innerText };
+        })()`,
+      );
+      assert(card.links.join() === "alpha.pdf", `the card links ${card.links.join()}`);
+      assert(!card.text.includes("Read first"), `the card previews the note: ${card.text}`);
+      await page!.eval(`document.querySelector('[data-item="smoke-2"] [data-ref="alpha.pdf"]').click()`);
+      await waitFor("alpha.pdf opened from the card", () =>
         page!.eval<boolean>(`location.hash === "#/f/alpha.pdf"`),
       );
       // A panel this size would sit over the widgets the next checks click.

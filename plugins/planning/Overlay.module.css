@@ -97,13 +97,23 @@
 .item {
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
-  gap: 1px;
-  width: 100%;
+  gap: 3px;
   padding: 0.3em 0.45em;
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
   background: var(--surface-hover);
+}
+
+/* The card's name and class: the part that opens the lesson's notes. */
+.itemMain {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 1px;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
   color: inherit;
   font: inherit;
   text-align: left;
@@ -144,14 +154,35 @@
 }
 
 /* The note's first line, so a lesson with notes shows it at a glance. */
-.preview {
+/* The PDFs the note links, under the name. */
+.links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 3px;
+}
+
+.ref {
   max-width: 100%;
   overflow: hidden;
-  font-size: 0.75em;
-  font-style: italic;
-  opacity: 0.6;
+  padding: 0.05em 0.35em;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background: var(--accent-dim);
+  color: inherit;
+  font: inherit;
+  font-size: 0.8em;
+  text-decoration: underline;
   text-overflow: ellipsis;
   white-space: nowrap;
+  cursor: pointer;
+}
+
+/* A title no PDF answers to: still shown, so the typo can be found. */
+.missing {
+  background: none;
+  opacity: 0.55;
+  text-decoration: line-through;
+  cursor: default;
 }
 
 .editItem {
@@ -193,10 +224,6 @@
   padding-left: 0.4em;
 }
 
-.editor {
-  position: relative;
-}
-
 .textarea {
   box-sizing: border-box;
   width: 100%;
@@ -210,13 +237,10 @@
   resize: vertical;
 }
 
+/* In the flow under the textarea rather than floating over the panel: the
+   panel's scrolling area would clip a floating list at its bottom edge. */
 .suggest {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: 100%;
-  z-index: 1;
-  margin: 2px 0 0;
+  margin: 0;
   padding: 2px;
   list-style: none;
   border: 1px solid var(--border);
@@ -238,29 +262,4 @@
 
 .dir {
   opacity: 0.6;
-}
-
-.rendered {
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.ref {
-  display: inline;
-  padding: 0 0.25em;
-  border: 0;
-  border-radius: var(--radius-sm);
-  background: var(--accent-dim);
-  color: inherit;
-  font: inherit;
-  text-decoration: underline;
-  cursor: pointer;
-}
-
-/* A title no PDF answers to: still shown, so the typo can be found. */
-.missing {
-  background: none;
-  opacity: 0.55;
-  text-decoration: line-through;
-  cursor: default;
 }

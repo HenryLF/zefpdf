@@ -9,13 +9,16 @@ import {
   Select,
   TextInput,
   useClasses,
+  useFiles,
   useInterval,
+  useTabs,
   useUi,
   type Class,
 } from "@/plugins/sdk";
 import { NoteEditor } from "./NoteEditor";
 import { itemsOfDay, noteKey, type Item } from "./planning";
 import { usePlanning, usePlanningLoaded } from "./planningStore";
+import { refsIn, resolveRef } from "./refs";
 import { useCalendar } from "./store";
 import {
   addWeeks,
@@ -157,21 +160,23 @@ function Week({ editing }: { editing: boolean }) {
                   return editing ? (
                     <EditItem key={item.id} item={item} parity={parity} classes={classes} cls={cls} />
                   ) : (
-                    <button
+                    <div
                       key={item.id}
                       data-item={item.id}
                       class={cx(s.item, cls && s.colored, item.id === selected && s.selected)}
                       style={classColor(cls)}
-                      onClick={() => setSelected(item.id === selected ? null : item.id)}
                     >
-                      <span class={s.name}>{item.name || "Untitled"}</span>
-                      {cls && <span class={s.class}>{cls.name}</span>}
-                      {notes[noteKey(mondayKey, item.id)] && (
-                        <span class={s.preview}>
-                          {notes[noteKey(mondayKey, item.id)]!.split("\n")[0]}
-                        </span>
-                      )}
-                    </button>
+                      <button
+                        class={s.itemMain}
+                        data-select="true"
+                        title="Notes for this lesson"
+                        onClick={() => setSelected(item.id === selected ? null : item.id)}
+                      >
+                        <span class={s.name}>{item.name || "Untitled"}</span>
+                        {cls && <span class={s.class}>{cls.name}</span>}
+                      </button>
+                      <ItemLinks note={notes[noteKey(mondayKey, item.id)] ?? ""} />
+                    </div>
                   );
                 })}
 
@@ -207,6 +212,40 @@ function Week({ editing }: { editing: boolean }) {
           />
         )}
       </div>
+    </div>
+  );
+}
+
+/**
+ * The PDFs a lesson's note links, as buttons on its card: what is wanted
+ * during the lesson is the document, one click away, not the note itself.
+ */
+function ItemLinks({ note }: { note: string }) {
+  const pdfs = useFiles((s) => s.pdfs);
+  const openFile = useTabs((s) => s.openFile);
+  const refs = refsIn(note);
+  if (refs.length === 0) return null;
+
+  return (
+    <div class={s.links}>
+      {refs.map((ref) => {
+        const file = resolveRef(ref, pdfs);
+        return file ? (
+          <button
+            key={ref}
+            class={s.ref}
+            data-ref={file.path}
+            title={`Open ${file.path}`}
+            onClick={() => openFile(file.path)}
+          >
+            {ref}
+          </button>
+        ) : (
+          <span key={ref} class={cx(s.ref, s.missing)} title="No PDF of that name">
+            {ref}
+          </span>
+        );
+      })}
     </div>
   );
 }
