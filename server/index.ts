@@ -1,5 +1,6 @@
 #!/usr/bin/env bun
 // zefpdf server: `bun server/index.ts [folder] [--port N] [--config path] [--no-open]`
+//          or: `bun server/index.ts --update` (runs install.sh, like `bun run update`)
 //
 // Serves the built app from dist/, the files of one folder (the root), and the
 // JSON API the app runs on. Every API route is `guarded`: only a browser page on
@@ -18,7 +19,8 @@ import { pluginRoutes } from "./routes/plugins";
 import { proxyRoutes } from "./routes/proxy";
 import { rootRoutes } from "./routes/root";
 
-const DIST = join(import.meta.dir, "..", "dist");
+const HOME = join(import.meta.dir, "..");
+const DIST = join(HOME, "dist");
 
 export interface ServerOptions {
   /** 0 picks a free port (the tests do) */
@@ -82,9 +84,16 @@ if (import.meta.main) {
       port: { type: "string" },
       config: { type: "string" },
       "no-open": { type: "boolean", default: false },
+      update: { type: "boolean", default: false },
     },
     allowPositionals: true,
   });
+
+  if (values.update) {
+    // install.sh updates the checkout it is given: this one, wherever we run from.
+    const proc = Bun.spawn(["bash", join(HOME, "install.sh"), HOME], { stdio: ["inherit", "inherit", "inherit"] });
+    process.exit(await proc.exited);
+  }
 
   const port = values.port === undefined ? undefined : Number(values.port);
   if (port !== undefined && !Number.isInteger(port)) {

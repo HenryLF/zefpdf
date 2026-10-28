@@ -32,14 +32,15 @@ curl -fsSL https://raw.githubusercontent.com/HenryLF/zefpdf/main/install.sh | ba
 
 This clones zefpdf into `~/.local/share/zefpdf` (or the folder given as an argument, or
 `$ZEFPDF_DIR`), installs [Bun](https://bun.sh) if it is missing, builds the app, and puts a
-`zefpdf` command on your PATH. On Linux it also adds a ZefPdf launcher to your app menu. Then:
+`zefpdf` command on your PATH. Then:
 
 ```bash
 zefpdf               # serve the folder named in config.json and open the browser
 zefpdf ~/Lessons     # serve another folder (this run only)
 ```
 
-**Update** by running `./install.sh` again in the install folder, or `bun run update`: it
+**Update** with `zefpdf --update` (or `./install.sh` again in the install folder, or
+`bun run update`): it
 pulls the latest version from GitHub, reinstalls dependencies and rebuilds. Your
 `config.json` and your classes (`data.sqlite`) are kept.
 
@@ -222,8 +223,8 @@ server/    Bun.serve: guard, config, root, db (bun:sqlite), routes/
 app/       the Preact app: state/ (zustand), ui/, views/{library,reader,database}, plugins/
 plugins/   one folder per plugin, plus plugins/shared
 scripts/   gen-registry.ts
-install.sh install from GitHub, or update and rebuild; on Linux, adds a desktop entry
-zefpdf.svg the desktop entry icon
+install.sh install from GitHub, or update and rebuild
+zefpdf.svg the zefpdf icon
 test/      bun tests, and the CDP smoke test
 ```
 
