@@ -9,8 +9,8 @@
   },
   "scripts": {
     "gen": "bun scripts/gen-registry.ts",
-    "build": "bun run gen && bun build app/index.html --outdir dist",
-    "dev": "bun run gen && bun build --watch app/index.html --outdir dist",
+    "build": "bun run gen && rm -rf dist && bun build app/index.html --outdir dist",
+    "dev": "bun run gen && rm -rf dist && bun build --watch app/index.html --outdir dist",
     "start": "bun run build && bun server/index.ts",
     "update": "./install.sh",
     "typecheck": "bun run gen && tsc --noEmit",
