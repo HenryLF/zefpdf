@@ -112,7 +112,7 @@ export const LIMITS = {
 export const DEFAULT_CONFIG: Config = {
   server: {
     cwd: ".",
-    port: 3000,
+    port: 3003,
     ignore: ["node_modules"],
     ignoreFiles: ".localignore",
     openBrowser: true,
